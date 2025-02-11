@@ -1,19 +1,23 @@
-// pages/[...page].tsx
 import React from "react";
-import { useRouter } from "next/router";
 import { BuilderComponent, builder, useIsPreviewing } from "@builder.io/react";
 import { BuilderContent } from "@builder.io/sdk";
 import DefaultErrorPage from "next/error";
 import Head from "next/head";
+import Header from "@/components/Header";
 import { GetStaticProps } from "next";
 
-// Replace with your Public API Key
-builder.init("e54fc038e88f4bb888620d9f97562e4b");
+// Проверяем, что переменная окружения существует
+const apiKey = process.env.NEXT_PUBLIC_BUILDER_API_KEY;
 
-// Define a function that fetches the Builder
-// content for a given page
+if (apiKey) {
+  builder.init(apiKey);
+} else {
+  console.error("Builder.io API key is not defined!");
+}
+
+// Загружаем данные статически
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  // Fetch the builder content for the given page
+  // Получаем содержимое текущей страницы
   const page = await builder
     .get("page", {
       userAttributes: {
@@ -22,52 +26,56 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     })
     .toPromise();
 
-  // Return the page content as props
+  // Получаем список всех страниц для меню
+  const pages = await builder.getAll("page", {
+    fields: "data.url,data.title",
+    options: { noTargeting: true },
+  });
+
   return {
     props: {
       page: page || null,
+      pages: pages || [],
     },
-    // Revalidate the content every 5 seconds
-    revalidate: 5,
+    revalidate: 5, // Обновление данных раз в 5 секунд
   };
 };
 
-// Define a function that generates the
-// static paths for all pages in Builder
+// Генерируем пути для статических страниц
 export async function getStaticPaths() {
-  // Get a list of all pages in Builder
   const pages = await builder.getAll("page", {
-    // We only need the URL field
     fields: "data.url",
     options: { noTargeting: true },
   });
 
-  // Generate the static paths for all pages in Builder
   return {
-    paths: pages.map((page) => `${page.data?.url}`).filter(url => url !== '/'),
-    fallback: 'blocking',
+    paths: pages.map((page) => `${page.data?.url}`).filter((url) => url !== "/"),
+    fallback: "blocking",
   };
 }
 
-// Define the Page component
-export default function Page({ page }: { page: BuilderContent | null }) {
-  const router = useRouter();
+// Основной компонент страницы
+export default function Page({
+  page,
+  pages,
+}: {
+  page: BuilderContent | null;
+  pages: any[];
+}) {
   const isPreviewing = useIsPreviewing();
 
-  // If the page content is not available
-  // and not in preview mode, show a 404 error page
   if (!page && !isPreviewing) {
     return <DefaultErrorPage statusCode={404} />;
   }
 
-  // If the page content is available, render
-  // the BuilderComponent with the page content
   return (
     <>
       <Head>
-        <title>{page?.data?.title}</title>
+        <title>{page?.data?.title || "Page"}</title>
       </Head>
-      {/* Render the Builder page */}
+      {/* Вставляем Header с навигацией */}
+      <Header pages={pages} />
+      {/* Рендерим контент страницы */}
       <BuilderComponent model="page" content={page || undefined} />
     </>
   );
