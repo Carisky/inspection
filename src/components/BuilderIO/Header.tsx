@@ -1,11 +1,12 @@
 import { Box } from "@mui/material";
 import React from "react";
 import pallete from "@/palette";
-const Header = ({ pages = [] }: { pages: any[] }) => {
+import Image from "next/image";
+import Page from "@/interfaces/Page";
+
+const Header = ({ pages = [] }: { pages: Page[] }) => {
   return (
-    <Box sx={{
-        marginBottom:"4%"
-    }}>
+    <Box>
       <Box
         sx={{
           backgroundColor: pallete.common_colors.main_color,
@@ -16,7 +17,6 @@ const Header = ({ pages = [] }: { pages: any[] }) => {
       <Box
         sx={{
           width: "100vw",
-          height: "24vh",
           backgroundColor: pallete.common_colors.background,
           display: "flex",
           justifyContent: "center",
@@ -33,10 +33,12 @@ const Header = ({ pages = [] }: { pages: any[] }) => {
           }}
         >
           <Box>
-            <img
-              height={"100%"}
-              src="images/assets/nav/cropped-logo-z-napisem-z-R_przez.png"
-              alt=""
+            <Image
+              src="/images/assets/nav/cropped-logo-z-napisem-z-R_przez.png"
+              alt="Company Logo"
+              width={200} 
+              height={200} 
+              priority 
             />
           </Box>
           <Box
@@ -83,22 +85,25 @@ const Header = ({ pages = [] }: { pages: any[] }) => {
           </Box>
         </Box>
       </Box>
-      <Box sx={{
-        width:"100%",
-        height:"7vh",
-        backgroundColor:pallete.common_colors.main_color,
-        position:"relative"
-      }}>
+      <Box
+        sx={{
+          width: "100%",
+          height: "7vh",
+          backgroundColor: pallete.common_colors.main_color,
+          position: "relative",
+        }}
+      >
         <Box
           sx={{
-            position:"absolute",
+            position: "absolute",
             display: "flex",
             backgroundColor: pallete.elements.nav,
             height: "10vh",
             width: "80vw",
             margin: "auto",
-            top:"3vh",
-            left:"10%"
+            top: "3vh",
+            left: "10%",
+            zIndex:10,
           }}
         >
           {pages.length > 0 ? (
