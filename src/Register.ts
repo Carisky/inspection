@@ -2,8 +2,9 @@ import { Builder } from "@builder.io/react";
 import Header from "./components/BuilderIO/Header";
 import Footer from "./components/BuilderIO/Footer";
 import ImagesCarousel from "./components/BuilderIO/ImagesCarousel";
-import FadeSlider from "./components/BuilderIO/FadeSlider"; // Импортируем FadeSlider
+import FadeSlider from "./components/BuilderIO/FadeSlider";
 import ArticlePreview from "./components/BuilderIO/ArticlePreview";
+import MultiLangText from "./components/BuilderIO/MultiLangText"; // Импортируем MultiLangText
 
 class Register {
   static init = () => {
@@ -96,6 +97,23 @@ class Register {
           name: "slug",
           type: "string",
           defaultValue: "sample-article",
+        },
+      ],
+    });
+
+    // Регистрация MultiLangText (inline переводы)
+    Builder.registerComponent(MultiLangText, {
+      name: "MultiLangText",
+      inputs: [
+        {
+          name: "translations",
+          type: "object",
+          subFields: [
+            { name: "ru", type: "string", defaultValue: "Пример текста (RU)" },
+            { name: "en", type: "string", defaultValue: "Example text (EN)" },
+            { name: "ua", type: "string", defaultValue: "Приклад тексту (UA)" },
+            { name: "pl", type: "string", defaultValue: "Przykładowy tekst (PL)" },
+          ],
         },
       ],
     });
