@@ -4,83 +4,75 @@ import { BuilderContent } from "@builder.io/sdk";
 import DefaultErrorPage from "next/error";
 import Head from "next/head";
 import Header from "@/components/BuilderIO/Header";
-import { GetStaticProps } from "next";
+import { GetStaticProps, GetStaticPaths } from "next";
+import { Box } from "@mui/material";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import Page from "@/interfaces/Page";
-import { SpeedInsights } from "@vercel/speed-insights/next"
+
 // Проверяем, что переменная окружения существует
 const apiKey = process.env.NEXT_PUBLIC_BUILDER_API_KEY;
-
 if (apiKey) {
   builder.init(apiKey);
 } else {
   console.error("Builder.io API key is not defined!");
 }
 
-// Загружаем данные статически
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  // Получаем содержимое текущей страницы
-  const page = await builder
-    .get("page", {
-      userAttributes: {
-        urlPath: "/" + ((params?.page as string[])?.join("/") || ""),
-      },
-    })
-    .toPromise();
-
-  // Получаем список всех страниц для меню
-  const pages = await builder.getAll("page", {
-    fields: "data.url,data.title",
-    options: { noTargeting: true },
-  });
-
-  return {
-    props: {
-      page: page || null,
-      pages: pages || [],
-    },
-    revalidate: 5, // Обновление данных раз в 5 секунд
-  };
-};
-
-// Генерируем пути для статических страниц
-export async function getStaticPaths() {
-  const pages = await builder.getAll("page", {
-    fields: "data.url",
-    options: { noTargeting: true },
-  });
-
-  return {
-    paths: pages.map((page) => `${page.data?.url}`).filter((url) => url !== "/"),
-    fallback: "blocking",
-  };
+interface PageProps {
+  builderPage: BuilderContent | null;
+  pages: Page[];
 }
 
-// Основной компонент страницы
-export default function Index({
-  page,
-  pages,
-}: {
-  page: BuilderContent | null;
-  pages: Page[];
-}) {
+export default function Index({ builderPage, pages }: PageProps) {
   const isPreviewing = useIsPreviewing();
 
-  if (!page && !isPreviewing) {
+  if (!builderPage && !isPreviewing) {
     return <DefaultErrorPage statusCode={404} />;
   }
 
   return (
     <>
       <Head>
-        <title>{page?.data?.title || "Page"}</title>
+        <title>{builderPage?.data?.title || "Page"}</title>
       </Head>
-      {/* Вставляем Header с навигацией */}
+      {/* Передаём список страниц в Header */}
       <Header pages={pages} />
-      {/* Рендерим контент страницы */}
-      <BuilderComponent model="page" content={page || undefined} />
-
-
+      <Box sx={{ minHeight: "80vh" }}>
+        <BuilderComponent model="page" content={builderPage || undefined} />
+      </Box>
       <SpeedInsights />
     </>
   );
 }
+
+// Если вы хотите предварительно сгенерировать пути — можно получить их,
+// но для корректной работы превью можно вернуть пустой массив с fallback: "blocking"
+export const getStaticPaths: GetStaticPaths = async () => {
+  return { paths: [], fallback: "blocking" };
+};
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const urlPath = "/" + ((params?.page as string[])?.join("/") || "");
+
+  // Загружаем содержимое текущей страницы
+  const builderPage = await builder
+    .get("page", {
+      userAttributes: {
+        urlPath,
+      },
+    })
+    .toPromise();
+
+  // Загружаем список страниц для меню
+  const pagesData = await builder.getAll("page", {
+    fields: "data.url,data.title",
+    options: { noTargeting: true },
+  });
+
+  return {
+    props: {
+      builderPage: builderPage || null,
+      pages: pagesData || [],
+    },
+    revalidate: 5, // ISR: обновление данных каждые 5 секунд
+  };
+};
