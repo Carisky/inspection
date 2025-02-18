@@ -21,7 +21,6 @@ interface HeaderProps {
   pages: Page[];
 }
 
-// Десктопная версия (без изменений, без fixed)
 const DesktopHeader = ({ pages }: HeaderProps) => {
   return (
     <Box>
@@ -123,7 +122,10 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
               >
                 <a
                   href={page.data.url}
-                  style={{ color: pallete.common_colors.white, textDecoration: "none" }}
+                  style={{
+                    color: pallete.common_colors.white,
+                    textDecoration: "none",
+                  }}
                 >
                   {page.data.title}
                 </a>
@@ -138,7 +140,6 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
   );
 };
 
-// Мобильная версия с бургер-меню (будет fixed)
 const MobileHeader = ({ pages }: HeaderProps) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -174,12 +175,17 @@ const MobileHeader = ({ pages }: HeaderProps) => {
             priority
           />
         </Box>
-        <IconButton onClick={toggleDrawer(true)} sx={{ color: pallete.common_colors.white }}>
-          <MenuIcon sx={{
-            color:pallete.common_colors.main_color,
-            height:"40px",
-            width:"40px"
-          }}/>
+        <IconButton
+          onClick={toggleDrawer(true)}
+          sx={{ color: pallete.common_colors.white }}
+        >
+          <MenuIcon
+            sx={{
+              color: pallete.common_colors.main_color,
+              height: "40px",
+              width: "40px",
+            }}
+          />
         </IconButton>
       </Box>
       <Box
@@ -191,7 +197,7 @@ const MobileHeader = ({ pages }: HeaderProps) => {
       />
       <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
         <Box
-          sx={{ width: 250,paddingTop:"10vh" }}
+          sx={{ width: 250, paddingTop: "10vh" }}
           role="presentation"
           onClick={toggleDrawer(false)}
           onKeyDown={toggleDrawer(false)}
@@ -199,27 +205,30 @@ const MobileHeader = ({ pages }: HeaderProps) => {
           <List>
             {pages.map((page) => (
               <React.Fragment key={page.data.url}>
-              <ListItemButton >
-                  <Link href={page.data.url}><Typography sx={{
-                    color:pallete.common_colors.main_color,
-                    fontWeight:700,
-                    fontSize:20,
-                    marginTop:"10px"
-                  }}>{page.data.title}</Typography></Link>
-                  
-              </ListItemButton>
-              <Divider sx={{ bgcolor: "grey.600", my: 2 }}/>
+                <ListItemButton>
+                  <Link href={page.data.url}>
+                    <Typography
+                      sx={{
+                        color: pallete.common_colors.main_color,
+                        fontWeight: 700,
+                        fontSize: 20,
+                        marginTop: "10px",
+                      }}
+                    >
+                      {page.data.title}
+                    </Typography>
+                  </Link>
+                </ListItemButton>
+                <Divider sx={{ bgcolor: "grey.600", my: 2 }} />
               </React.Fragment>
             ))}
           </List>
         </Box>
-
       </Drawer>
     </Box>
   );
 };
 
-// Основной компонент, который условно отрисовывает фиксированную мобильную версию или обычную десктопную
 const Header = ({ pages }: HeaderProps) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));

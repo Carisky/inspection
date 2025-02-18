@@ -17,7 +17,7 @@ const FadeSlider = ({
       setCurrentIndex((prevIndex) =>
         prevIndex === images.length - 1 ? 0 : prevIndex + 1
       );
-    }, 5000); // Смена каждые 5 секунд
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [images.length]);

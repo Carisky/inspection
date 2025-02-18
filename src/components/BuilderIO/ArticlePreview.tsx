@@ -13,7 +13,12 @@ interface ArticlePreviewComponent extends React.FC<ArticlePreviewProps> {
   getInitialProps?: () => {};
 }
 
-const ArticlePreview: ArticlePreviewComponent = ({ title, image, excerpt, slug }) => {
+const ArticlePreview: ArticlePreviewComponent = ({
+  title,
+  image,
+  excerpt,
+  slug,
+}) => {
   return (
     <Box
       sx={{
@@ -27,7 +32,7 @@ const ArticlePreview: ArticlePreviewComponent = ({ title, image, excerpt, slug }
         component="img"
         src={image}
         alt={title}
-        sx={{height:"300px", objectFit: "cover", aspectRatio:"1/1" }}
+        sx={{ height: "300px", objectFit: "cover", aspectRatio: "1/1" }}
       />
       <Box sx={{ p: 2 }}>
         <Typography variant="h5" component="h2" gutterBottom>
@@ -37,14 +42,13 @@ const ArticlePreview: ArticlePreviewComponent = ({ title, image, excerpt, slug }
           {excerpt}
         </Typography>
         <Link href={`/article/${slug}`} passHref>
-         <Box>Read more</Box>
+          <Box>Read more</Box>
         </Link>
       </Box>
     </Box>
   );
 };
 
-// Добавляем пустой getInitialProps, чтобы Builder.io не пытался его прочитать
 ArticlePreview.getInitialProps = () => ({});
 
 export default ArticlePreview;

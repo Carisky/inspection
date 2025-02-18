@@ -2,7 +2,6 @@ import React from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 
-// Настройки адаптивности карусели
 const responsive = {
   desktop: {
     breakpoint: { max: 3000, min: 1024 },
@@ -21,7 +20,6 @@ const responsive = {
   },
 };
 
-// Компонент карусели
 const ImagesCarousel = ({
   images = [],
   imageWidth = "100%",
