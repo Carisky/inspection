@@ -5,7 +5,25 @@ import ImagesCarousel from "./components/BuilderIO/ImagesCarousel";
 import FadeSlider from "./components/BuilderIO/FadeSlider";
 import ArticlePreview from "./components/BuilderIO/ArticlePreview";
 import MultiLangText from "./components/BuilderIO/MultiLangText"; // Импортируем MultiLangText
-
+import MultiLangTitle from "./components/BuilderIO/MultiLangTitle";
+import SocialMediaList from "./components/BuilderIO/SocialMediaList";
+import IconTextList from "./components/BuilderIO/IconTextList";
+import Kwiatkowska from "./components/BuilderIO/Contacts/Marketing/Kwiatkowska";
+const materialIcons = [
+  "Info",
+  "CheckCircle",
+  "Warning",
+  "Error",
+  "Star",
+  "Favorite",
+  "Home",
+  "Phone",
+  "Email",
+  "Person",
+  "ShoppingCart",
+  "Help",
+  "Check Circle"
+];
 class Register {
   static init = () => {
     Builder.registerComponent(Header, {
@@ -112,8 +130,120 @@ class Register {
             { name: "ru", type: "string", defaultValue: "Пример текста (RU)" },
             { name: "en", type: "string", defaultValue: "Example text (EN)" },
             { name: "ua", type: "string", defaultValue: "Приклад тексту (UA)" },
-            { name: "pl", type: "string", defaultValue: "Przykładowy tekst (PL)" },
+            { name: "pl", type: "string", defaultValue: "Przykładowy текст (PL)" },
           ],
+        },
+        {
+          name: "textAlign",
+          type: "enum",
+          defaultValue: "left",
+          helperText: "Выравнивание текста",
+          enum: ["left", "center", "right"],
+        },
+        {
+          name: "fontSize",
+          type: "number",
+          defaultValue: 16,
+          helperText: "Размер шрифта в px",
+        },
+      ],
+    });
+
+    // Регистрация MultiLangTitle (inline переводы)
+    Builder.registerComponent(MultiLangTitle, {
+      name: "MultiLangTitle",
+      inputs: [
+        {
+          name: "translations",
+          type: "object",
+          subFields: [
+            { name: "ru", type: "string", defaultValue: "Пример текста (RU)" },
+            { name: "en", type: "string", defaultValue: "Example text (EN)" },
+            { name: "ua", type: "string", defaultValue: "Приклад тексту (UA)" },
+            { name: "pl", type: "string", defaultValue: "Przykładowy текст (PL)" },
+          ],
+        },
+        {
+          name: "showDividers",
+          type: "boolean",
+          defaultValue: true,
+          helperText: "Показывать Divider перед и после заголовка",
+        },
+        {
+          name: "headingLevel",
+          type: "enum",
+          defaultValue: "h2",
+          helperText: "Выберите уровень заголовка (h1-h6)",
+          enum: ["h1", "h2", "h3", "h4", "h5", "h6"],
+        },
+      ],
+    });
+
+    // Регистрация SocialMediaList (Список соц сетей)
+    Builder.registerComponent(SocialMediaList, {
+      name: "SocialMediaList",
+      description: "Список соцсетей с цветными иконками",
+    });
+
+    // Регистрация IconTextList (Список с иконками)
+    Builder.registerComponent(IconTextList, {
+      name: "IconTextList",
+      description: "Список текста с иконками и мультиязычностью",
+      inputs: [
+        {
+          name: "items",
+          type: "list",
+          defaultValue: [
+            {
+              iconName: "Info",
+              translations: {
+                ru: "Пример строки (RU)",
+                en: "Example line (EN)",
+                ua: "Приклад рядка (UA)",
+                pl: "Przykładowa linia (PL)",
+              },
+            },
+          ],
+          subFields: [
+            {
+              name: "iconName",
+              type: "enum",
+              helperText: "Выберите иконку",
+              enum: materialIcons,
+              defaultValue: "Info",
+            },
+            {
+              name: "translations",
+              type: "object",
+              subFields: [
+                { name: "ru", type: "string", defaultValue: "Пример строки (RU)" },
+                { name: "en", type: "string", defaultValue: "Example line (EN)" },
+                { name: "ua", type: "string", defaultValue: "Приклад рядка (UA)" },
+                { name: "pl", type: "string", defaultValue: "Przykładowa linia (PL)" },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+
+    // Регистрация Kwiatkowska (Список Контактов Wiktoria Kwiatkowska)
+    Builder.registerComponent(Kwiatkowska, {
+      name: "Kwiatkowska",
+      description: "Список контактов Wiktoria Kwiatkowska",
+      inputs: [
+        {
+          name: "contacts",
+          type: "list",
+          defaultValue: [
+            "Wiktoria Kwiatkowska",
+            "Kierownik Działu Marketingu",
+            "kom. +48 608 675 834",
+            "tel. +48 322 822 062",
+            "w.kwiatkowska@tsl-silesia.com.pl",
+          ],
+          subFields: [{ name: "text", type: "string", defaultValue: "Nowy kontakt" }],
+          helperText: "Добавьте или измените контакты",
         },
       ],
     });
