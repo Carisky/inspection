@@ -1,5 +1,6 @@
 import React from "react";
-import { useLocale } from "@/context/LocaleContext";
+import { useLocaleStore } from "@/stores/useLocaleStore";
+import { Typography } from "@mui/material";
 
 interface MultiLangTextProps {
   translations?: {
@@ -8,10 +9,16 @@ interface MultiLangTextProps {
     ua?: string;
     pl?: string;
   };
+  textAlign?: "left" | "center" | "right"; // Выбор выравнивания
+  fontSize?: number; // Размер шрифта
 }
 
-const MultiLangText: React.FC<MultiLangTextProps> = ({ translations = {} }) => {
-  const { locale } = useLocale();
+const MultiLangText: React.FC<MultiLangTextProps> = ({
+  translations = {},
+  textAlign = "left", // По умолчанию текст слева
+  fontSize = 20, // По умолчанию 16px
+}) => {
+  const { locale } = useLocaleStore();
 
   const defaultTranslations = {
     ru: "Пример текста (RU)",
@@ -26,7 +33,17 @@ const MultiLangText: React.FC<MultiLangTextProps> = ({ translations = {} }) => {
     mergedTranslations[locale as keyof typeof mergedTranslations] ||
     mergedTranslations.ru;
 
-  return <span>{text}</span>;
+  return (
+    <Typography
+      variant="body1"
+      sx={{
+        textAlign,
+        fontSize: `${fontSize}px`,
+      }}
+    >
+      {text}
+    </Typography>
+  );
 };
 
 export default MultiLangText;
