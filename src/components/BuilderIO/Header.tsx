@@ -5,7 +5,6 @@ import {
   IconButton,
   List,
   ListItemButton,
-  ListItemText,
   useTheme,
   useMediaQuery,
   Typography,
@@ -16,7 +15,8 @@ import MenuIcon from "@mui/icons-material/Menu";
 import pallete from "@/palette";
 import Page from "@/interfaces/Page";
 import Link from "next/link";
-
+import { useInitLocale } from "@/stores/useLocaleStore";
+import { Call, Mail, Map, Home } from "@mui/icons-material";
 interface HeaderProps {
   pages: Page[];
 }
@@ -65,18 +65,23 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
               gridTemplateRows: "repeat(2, auto)",
               gap: 2,
               flexGrow: 1,
+              color: pallete.common_colors.accent,
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Map sx={{ marginRight:"10px", color: pallete.common_colors.main_color }} />
               ul. Rycerska 9, 41-902 Bytom
             </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Call sx={{ marginRight:"10px", color: pallete.common_colors.main_color }} />
               +48 (32) 282 90 62
             </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Call sx={{ marginRight:"10px", color: pallete.common_colors.main_color }} />
               +48 (32) 281 34 02
             </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Mail sx={{ marginRight:"10px", color: pallete.common_colors.main_color }} />
               office@tsl-group.pl
             </Box>
           </Box>
@@ -127,7 +132,7 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
                     textDecoration: "none",
                   }}
                 >
-                  {page.data.title}
+                  {page.data.url ==="/"? <Home/>:page.data.title}
                 </a>
               </Box>
             ))
@@ -230,6 +235,7 @@ const MobileHeader = ({ pages }: HeaderProps) => {
 };
 
 const Header = ({ pages }: HeaderProps) => {
+  useInitLocale();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
