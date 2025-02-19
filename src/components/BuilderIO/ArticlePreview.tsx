@@ -1,6 +1,8 @@
 import React from "react";
 import Link from "next/link";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
+import Title from "../UI/common/Title";
+import pallete from "@/palette";
 
 interface ArticlePreviewProps {
   title: string;
@@ -9,11 +11,7 @@ interface ArticlePreviewProps {
   slug: string;
 }
 
-interface ArticlePreviewComponent extends React.FC<ArticlePreviewProps> {
-  getInitialProps?: () => {};
-}
-
-const ArticlePreview: ArticlePreviewComponent = ({
+const ArticlePreview: React.FC<ArticlePreviewProps> = ({
   title,
   image,
   excerpt,
@@ -22,33 +20,47 @@ const ArticlePreview: ArticlePreviewComponent = ({
   return (
     <Box
       sx={{
+        display: "flex",
+        flexDirection: { xs: "column", md: "row" }, // Вертикально на мобилке, горизонтально на десктопе
+        alignItems: "center",
+        gap: 2,
         borderRadius: "8px",
         overflow: "hidden",
         boxShadow: "0px 2px 8px rgba(0,0,0,0.1)",
         mb: 4,
+        p: 2,
       }}
     >
-      <Box
-        component="img"
-        src={image}
-        alt={title}
-        sx={{ height: "300px", objectFit: "cover", aspectRatio: "1/1" }}
-      />
-      <Box sx={{ p: 2 }}>
-        <Typography variant="h5" component="h2" gutterBottom>
-          {title}
-        </Typography>
-        <Typography variant="body1" color="text.secondary" gutterBottom>
+      {/* Левая часть: Заголовок и изображение */}
+      <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 1 }}>
+        <Title text={title} />
+        <Box
+          component="img"
+          src={image}
+          alt={title}
+          sx={{
+            width: "100%",
+            height: "auto",
+            maxHeight: "300px",
+            objectFit: "cover",
+            borderRadius: "8px",
+          }}
+        />
+      </Box>
+
+      {/* Правая часть: Описание и кнопка */}
+      <Box sx={{ flex: 1, display: "flex", flexDirection: "column", marginTop:"1vh" }}>
+        <Typography variant="body1" color="text.secondary">
           {excerpt}
         </Typography>
         <Link href={`/article/${slug}`} passHref>
-          <Box>Read more</Box>
+          <Button variant="contained" sx={{ backgroundColor:pallete.common_colors.main_color,alignSelf: "center" }}>
+            Read more
+          </Button>
         </Link>
       </Box>
     </Box>
   );
 };
-
-ArticlePreview.getInitialProps = () => ({});
 
 export default ArticlePreview;
