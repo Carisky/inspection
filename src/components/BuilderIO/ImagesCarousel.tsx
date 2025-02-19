@@ -22,7 +22,7 @@ const responsive = {
 
 const ImagesCarousel = ({
   images = [],
-  imageWidth = "100%",
+  imageWidth = "75%",
   imageHeight = "auto",
 }: {
   images: { url: string }[];
