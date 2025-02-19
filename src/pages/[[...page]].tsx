@@ -8,6 +8,7 @@ import { GetStaticProps, GetStaticPaths } from "next";
 import { Box } from "@mui/material";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Page from "@/interfaces/Page";
+import Footer from "@/components/BuilderIO/Footer";
 
 // Проверяем, что переменная окружения существует
 const apiKey = process.env.NEXT_PUBLIC_BUILDER_API_KEY;
@@ -36,9 +37,10 @@ export default function Index({ builderPage, pages }: PageProps) {
       </Head>
       {/* Передаём список страниц в Header */}
       <Header pages={pages} />
-      <Box sx={{ minHeight: "80vh" }}>
+      <Box sx={{ minHeight: "80vh", marginTop: builderPage?.data?.title == "Home"? "0":"7vh" }}>
         <BuilderComponent model="page" content={builderPage || undefined} />
       </Box>
+      <Footer/>
       <SpeedInsights />
     </>
   );
