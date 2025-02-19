@@ -6,7 +6,8 @@ const pallete = {
   common_colors:{
     white:"#fff",
     main_color:"#8d004c",
-    background:"#dedede"
+    background:"#dedede",
+    accent:"#01afb6"
   }
 };
 export default pallete;
