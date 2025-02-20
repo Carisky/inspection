@@ -78,7 +78,6 @@ const Index: NextPage<PageProps> = ({ builderPage, pages, domain, asPath }) => {
         />
         <link rel="alternate" href={`${domain}/`} hrefLang="x-default" />
       </Head>
-      {/* Передаём список страниц в Header */}
       <Header pages={pages} />
       <Box
         sx={{
