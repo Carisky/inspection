@@ -9,6 +9,7 @@ import MultiLangTitle from "./components/BuilderIO/MultiLangTitle";
 import SocialMediaList from "./components/BuilderIO/SocialMediaList";
 import IconTextList from "./components/BuilderIO/IconTextList";
 import Kwiatkowska from "./components/BuilderIO/Contacts/Marketing/Kwiatkowska";
+import PeopleAccordion from "./components/BuilderIO/PeopleAccordion";
 const materialIcons = [
   "Info",
   "CheckCircle",
@@ -50,8 +51,27 @@ class Register {
           ],
           defaultValue: [],
         },
+        {
+          name: "imageWidth",
+          type: "string",
+          defaultValue: "75%",
+          helperText: "Ширина изображения (например: 300px, 100%)",
+        },
+        {
+          name: "imageHeight",
+          type: "string",
+          defaultValue: "auto",
+          helperText: "Высота изображения (например: 300px, auto)",
+        },
+        {
+          name: "aspectRatio",
+          type: "string",
+          defaultValue: "",
+          helperText: "Соотношение сторон изображения (например: 16/9, 4/3)",
+        },
       ],
     });
+    
 
     // Регистрация FadeSlider
     Builder.registerComponent(FadeSlider, {
@@ -246,6 +266,63 @@ class Register {
           helperText: "Добавьте или измените контакты",
         },
       ],
+    });
+    // Регистрация Kwiatkowska (Акордион с контактными данными)
+    Builder.registerComponent(PeopleAccordion, {
+      name: 'PeopleAccordion',
+      inputs: [
+        {
+          name: 'headerTranslations',
+          type: 'object',
+          subFields: [
+            { name: 'ru', type: 'string', defaultValue: 'Сотрудники' },
+            { name: 'en', type: 'string', defaultValue: 'Team Members' },
+            { name: 'ua', type: 'string', defaultValue: 'Співробітники' },
+            { name: 'pl', type: 'string', defaultValue: 'Pracownicy' },
+          ],
+          helperText: 'Введите переводы для заголовка'
+        },
+        {
+          name: 'people',
+          type: 'list',
+          defaultValue: [],
+          subFields: [
+            { name: 'firstName', type: 'string', defaultValue: 'John' },
+            { name: 'lastName', type: 'string', defaultValue: 'Doe' },
+            { name: 'photo', type: 'file' },
+            {
+              name: 'positionTranslations',
+              type: 'object',
+              subFields: [
+                { name: 'ru', type: 'string', defaultValue: 'Должность' },
+                { name: 'en', type: 'string', defaultValue: 'Position' },
+                { name: 'ua', type: 'string', defaultValue: 'Посада' },
+                { name: 'pl', type: 'string', defaultValue: 'Stanowisko' },
+              ],
+              helperText: 'Введите переводы для должности'
+            },
+            // Дополнительные контактные данные
+            {
+              name: 'tl',
+              type: 'string',
+              defaultValue: '',
+              helperText: 'Введите номер телефона'
+            },
+            {
+              name: 'email',
+              type: 'string',
+              defaultValue: '',
+              helperText: 'Введите email'
+            },
+            {
+              name: 'tlWew',
+              type: 'string',
+              defaultValue: '',
+              helperText: 'Введите значение для tl.wew'
+            }
+          ]
+        }
+      ]
     });
   };
 }
