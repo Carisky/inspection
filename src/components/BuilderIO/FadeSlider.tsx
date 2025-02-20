@@ -54,6 +54,7 @@ const FadeSlider = ({
               width: "100%",
               height: "100%",
               objectFit: "cover",
+              filter: "grayscale(30%) brightness(70%) contrast(80%) blur(0.3px)",
             }}
           />
         </Box>
