@@ -3,14 +3,13 @@ import { BuilderComponent, builder, useIsPreviewing } from "@builder.io/react";
 import { BuilderContent } from "@builder.io/sdk";
 import DefaultErrorPage from "next/error";
 import Head from "next/head";
+import { GetStaticProps, GetStaticPaths, NextPage } from "next";
+import { Box, useMediaQuery, useTheme } from "@mui/material";
 import Header from "@/components/BuilderIO/Header";
-import { GetStaticProps, GetStaticPaths } from "next";
-import { Box } from "@mui/material";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import Page from "@/interfaces/Page";
 import Footer from "@/components/BuilderIO/Footer";
+import Page from "@/interfaces/Page";
 
-// Проверяем, что переменная окружения существует
+// Инициализация Builder.io (если API ключ задан)
 const apiKey = process.env.NEXT_PUBLIC_BUILDER_API_KEY;
 if (apiKey) {
   builder.init(apiKey);
@@ -21,10 +20,33 @@ if (apiKey) {
 interface PageProps {
   builderPage: BuilderContent | null;
   pages: Page[];
+  domain: string;
+  asPath: string;
 }
 
-export default function Index({ builderPage, pages }: PageProps) {
+// Функция для удаления существующего параметра "lang" из пути
+const removeLangParam = (path: string): string => {
+  try {
+    const url = new URL(path, "http://example.com");
+    url.searchParams.delete("lang");
+    return url.pathname + (url.search || "");
+  } catch (error) {
+    console.log(error)
+    return path;
+  }
+};
+
+// Функция для добавления параметра "lang" корректно
+const addLangParam = (path: string, lang: string): string => {
+  const basePath = removeLangParam(path);
+  const separator = basePath.includes("?") ? "&" : "?";
+  return `${basePath}${separator}lang=${lang}`;
+};
+
+const Index: NextPage<PageProps> = ({ builderPage, pages, domain, asPath }) => {
   const isPreviewing = useIsPreviewing();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   if (!builderPage && !isPreviewing) {
     return <DefaultErrorPage statusCode={404} />;
@@ -34,33 +56,59 @@ export default function Index({ builderPage, pages }: PageProps) {
     <>
       <Head>
         <title>{builderPage?.data?.title || "Page"}</title>
+        <link
+          rel="alternate"
+          href={`${domain}${addLangParam(asPath, "ru")}`}
+          hrefLang="ru"
+        />
+        <link
+          rel="alternate"
+          href={`${domain}${addLangParam(asPath, "en")}`}
+          hrefLang="en"
+        />
+        <link
+          rel="alternate"
+          href={`${domain}${addLangParam(asPath, "ua")}`}
+          hrefLang="ua"
+        />
+        <link
+          rel="alternate"
+          href={`${domain}${addLangParam(asPath, "pl")}`}
+          hrefLang="pl"
+        />
+        <link rel="alternate" href={`${domain}/`} hrefLang="x-default" />
       </Head>
       {/* Передаём список страниц в Header */}
       <Header pages={pages} />
-      <Box sx={{ minHeight: "80vh", marginTop: builderPage?.data?.title == "Home"? "0":"7vh" }}>
-        <BuilderComponent model="page" content={builderPage || undefined} />
+      <Box
+        sx={{
+          minHeight: "80vh",
+          marginTop: builderPage?.data?.title === "Home" ? "0" : "7vh",
+        }}
+      >
+        <Box sx={{ marginTop: isMobile ? "35vh" : "0" }}>
+          <BuilderComponent model="page" content={builderPage || undefined} />
+        </Box>
       </Box>
-      <Footer/>
-      <SpeedInsights />
+      <Footer />
     </>
   );
-}
+};
 
-// Если вы хотите предварительно сгенерировать пути — можно получить их,
-// но для корректной работы превью можно вернуть пустой массив с fallback: "blocking"
+export default Index;
+
 export const getStaticPaths: GetStaticPaths = async () => {
   return { paths: [], fallback: "blocking" };
 };
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const urlPath = "/" + ((params?.page as string[])?.join("/") || "");
+export const getStaticProps: GetStaticProps<PageProps> = async (context) => {
+  // Вычисляем путь страницы на основе параметров URL
+  const urlPath = "/" + ((context.params?.page as string[])?.join("/") || "");
 
   // Загружаем содержимое текущей страницы
   const builderPage = await builder
     .get("page", {
-      userAttributes: {
-        urlPath,
-      },
+      userAttributes: { urlPath },
     })
     .toPromise();
 
@@ -70,10 +118,25 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     options: { noTargeting: true },
   });
 
+  // Преобразуем pagesData к типу Page[]
+  const pages: Page[] = pagesData.map((page: any) => ({
+    data: {
+      url: page.data?.url || "",
+      title: page.data?.title || "",
+    },
+  }));
+
+  // Используем переменную окружения для домена или http://localhost:3000 по умолчанию
+  const domain = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  // asPath вычисляем как urlPath, т.к. resolvedUrl недоступен в getStaticProps
+  const asPath = urlPath;
+
   return {
     props: {
       builderPage: builderPage || null,
-      pages: pagesData || [],
+      pages,
+      domain,
+      asPath,
     },
     revalidate: 5, // ISR: обновление данных каждые 5 секунд
   };
