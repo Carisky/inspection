@@ -24,10 +24,12 @@ const ImagesCarousel = ({
   images = [],
   imageWidth = "75%",
   imageHeight = "auto",
+  aspectRatio = ""
 }: {
   images: { url: string }[];
   imageWidth?: string;
   imageHeight?: string;
+  aspectRatio?: string;
 }) => {
   return (
     <Carousel
@@ -36,6 +38,7 @@ const ImagesCarousel = ({
       infinite
       keyBoardControl
       containerClass="carousel-container"
+      removeArrowOnDeviceType={["mobile"]}
     >
       {images.map((img, index) => (
         <div key={index} style={{ padding: "10px", textAlign: "center" }}>
@@ -47,6 +50,7 @@ const ImagesCarousel = ({
               height: imageHeight,
               borderRadius: "10px",
               objectFit: "cover",
+              aspectRatio: aspectRatio,
             }}
           />
         </div>
