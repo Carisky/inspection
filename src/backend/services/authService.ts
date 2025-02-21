@@ -1,5 +1,4 @@
 // src/backend/services/authService.ts
-import bcrypt from 'bcrypt';
 import { supabaseAdmin } from '../supabaseClient';
 
 export interface Admin {

@@ -34,7 +34,7 @@ const EmailTemplateEditor: React.FC = () => {
     });
   };
 
-  const onReady: EmailEditorProps["onReady"] = (unlayer) => {
+  const onReady: EmailEditorProps["onReady"] = () => {
     console.log("Editor is ready");
     // Здесь можно загрузить начальный шаблон, если нужно:
     // unlayer.loadDesign({ ... });
