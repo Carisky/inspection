@@ -4,12 +4,14 @@ import Footer from "./components/BuilderIO/Footer";
 import ImagesCarousel from "./components/BuilderIO/ImagesCarousel";
 import FadeSlider from "./components/BuilderIO/FadeSlider";
 import ArticlePreview from "./components/BuilderIO/ArticlePreview";
+import {ArticleGrid} from "./components/BuilderIO/ArticleGrid";
 import MultiLangText from "./components/BuilderIO/MultiLangText"; // Импортируем MultiLangText
 import MultiLangTitle from "./components/BuilderIO/MultiLangTitle";
 import SocialMediaList from "./components/BuilderIO/SocialMediaList";
 import IconTextList from "./components/BuilderIO/IconTextList";
 import Kwiatkowska from "./components/BuilderIO/Contacts/Marketing/Kwiatkowska";
 import PeopleAccordion from "./components/BuilderIO/PeopleAccordion";
+
 const materialIcons = [
   "Info",
   "CheckCircle",
@@ -25,6 +27,7 @@ const materialIcons = [
   "Help",
   "Check Circle"
 ];
+
 class Register {
   static init = () => {
     Builder.registerComponent(Header, {
@@ -72,7 +75,6 @@ class Register {
       ],
     });
     
-
     // Регистрация FadeSlider
     Builder.registerComponent(FadeSlider, {
       name: "FadeSlider",
@@ -135,6 +137,21 @@ class Register {
           name: "slug",
           type: "string",
           defaultValue: "sample-article",
+        },
+      ],
+    });
+
+    // Регистрация ArticleGrid (новый компонент)
+    Builder.registerComponent(ArticleGrid, {
+      name: "ArticleGrid",
+      description: "Сетка превью статей с возможностью фильтрации по категории",
+      inputs: [
+        {
+          name: "filterByCategory",
+          type: "string",
+          defaultValue: "",
+          friendlyName: "Фильтр по категории (slug)",
+          helperText: "Если указано, будут показаны только статьи, у которых slug категории совпадает с этим значением.",
         },
       ],
     });
@@ -267,7 +284,8 @@ class Register {
         },
       ],
     });
-    // Регистрация Kwiatkowska (Акордион с контактными данными)
+
+    // Регистрация PeopleAccordion (Акордион с контактными данными)
     Builder.registerComponent(PeopleAccordion, {
       name: 'PeopleAccordion',
       inputs: [
@@ -301,7 +319,6 @@ class Register {
               ],
               helperText: 'Введите переводы для должности'
             },
-            // Дополнительные контактные данные
             {
               name: 'tl',
               type: 'string',
