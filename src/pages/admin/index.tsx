@@ -1,4 +1,4 @@
-// src/pages/admin/index.tsx
+
 import { GetServerSideProps } from 'next';
 import { parse } from 'cookie';
 import { useState } from 'react';
@@ -52,7 +52,6 @@ const AdminDashboard = () => {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      {/* Верхняя панель */}
       <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar>
           <Typography variant="h6" noWrap component="div">
@@ -60,8 +59,6 @@ const AdminDashboard = () => {
           </Typography>
         </Toolbar>
       </AppBar>
-
-      {/* Левая навигация */}
       <Drawer
         variant="permanent"
         sx={{
@@ -105,11 +102,8 @@ const AdminDashboard = () => {
             </ListItem>
           </List>
           <Divider />
-          {/* Дополнительные элементы навигации */}
         </Box>
       </Drawer>
-
-      {/* Основной контент */}
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
         {renderContent()}
@@ -122,7 +116,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const cookieHeader = context.req.headers.cookie || '';
   const cookies = parse(cookieHeader);
 
-  // Простейшая проверка наличия токена
+  
   if (!cookies.token) {
     return {
       redirect: {

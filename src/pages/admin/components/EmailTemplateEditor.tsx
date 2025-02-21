@@ -14,7 +14,6 @@ const EmailTemplateEditor: React.FC = () => {
       const { design, html } = data;
       console.log("exportHtml", html);
 
-      // Отправляем данные шаблона (название, design и html) на сервер
       fetch("/api/admin/email-template", {
         method: "POST",
         headers: {
@@ -36,8 +35,6 @@ const EmailTemplateEditor: React.FC = () => {
 
   const onReady: EmailEditorProps["onReady"] = () => {
     console.log("Editor is ready");
-    // Здесь можно загрузить начальный шаблон, если нужно:
-    // unlayer.loadDesign({ ... });
   };
 
   return (
@@ -57,11 +54,7 @@ const EmailTemplateEditor: React.FC = () => {
           onChange={(e) => setName(e.target.value)}
           sx={{ height: "40px", marginRight: "10px" }}
         />
-        <Button
-          sx={{ height: "56px" }}
-          variant="outlined"
-          onClick={exportHtml}
-        >
+        <Button sx={{ height: "56px" }} variant="outlined" onClick={exportHtml}>
           Export HTML
         </Button>
       </Box>

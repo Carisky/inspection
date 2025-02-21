@@ -5,7 +5,6 @@ const Settings = () => {
   return (
     <div>
       <Typography variant="h5">Настройки системы</Typography>
-      {/* Добавьте здесь настройки системы */}
     </div>
   );
 };

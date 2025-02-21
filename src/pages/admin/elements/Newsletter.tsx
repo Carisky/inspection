@@ -27,13 +27,13 @@ const Newsletter: React.FC = () => {
   const [sending, setSending] = useState<boolean>(false);
   const [previewHtml, setPreviewHtml] = useState<string>('');
 
-  // Загружаем список шаблонов с сервера
+  
   useEffect(() => {
     setLoadingTemplates(true);
     fetch('/api/admin/email-templates')
       .then((res) => res.json())
       .then((data) => {
-        // Предполагаем, что API возвращает объект { data: EmailTemplate[] }
+        
         setTemplates(data.data);
       })
       .catch((err) => {
@@ -42,7 +42,7 @@ const Newsletter: React.FC = () => {
       .finally(() => setLoadingTemplates(false));
   }, []);
 
-  // При выборе шаблона обновляем превью
+  
   useEffect(() => {
     if (selectedTemplateId !== '') {
       const template = templates.find((t) => t.id === selectedTemplateId);
@@ -58,8 +58,6 @@ const Newsletter: React.FC = () => {
       return;
     }
 
-    setSending(true);
-    // Отправляем рассылку через API (предполагаем, что такой роут существует)
     fetch('/api/admin/send-newsletter', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -90,7 +88,6 @@ const Newsletter: React.FC = () => {
         Здесь вы можете управлять рассылкой новостей.
       </Typography>
 
-      {/* Выбор шаблона */}
       <FormControl fullWidth sx={{ mt: 2 }}>
         <InputLabel id="template-select-label">Выберите шаблон</InputLabel>
         <Select
@@ -113,7 +110,6 @@ const Newsletter: React.FC = () => {
         </Select>
       </FormControl>
 
-      {/* Превью выбранного шаблона */}
       {previewHtml && (
         <Box
           sx={{
@@ -132,7 +128,6 @@ const Newsletter: React.FC = () => {
         </Box>
       )}
 
-      {/* Форма рассылки */}
       <Box component="form" sx={{ mt: 2 }}>
         <TextField
           label="Тема рассылки"
