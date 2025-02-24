@@ -11,53 +11,35 @@ if (apiKey) {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
-  // Задайте языки, для которых нужно генерировать ссылки
-  const languages = ['en', 'ru', 'ua', 'pl'];
+  // Языки, для которых нужно генерировать ссылки
+  const languages = ['ru', 'en', 'ua', 'pl'];
 
-  // Получаем все страницы из Builder.io модели "page"
+  // Получаем все страницы из модели "page"
   const pagesData = await builder.getAll("page", {
     fields: "data.url,data.title",
     options: { noTargeting: true },
   });
-  console.log('Полученные страницы:', pagesData);
 
-  // Тип для URL
-  type URLItem = { loc: string };
-
-  // Используем переменную окружения для базового URL
+  // Базовый URL из переменной окружения или localhost
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
-  const urls: URLItem[] = [];
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" `;
+  xml += `xmlns:xhtml="http://www.w3.org/1999/xhtml">\n`;
+
   pagesData.forEach((page) => {
     const pageUrl = page.data?.url;
     if (pageUrl) {
+      xml += `  <url>\n`;
+      // Выбираем один из вариантов в качестве канонического (например, ru)
+      xml += `    <loc>${baseUrl}/ru${pageUrl}</loc>\n`;
       languages.forEach((lang) => {
-        // Формируем URL с query-параметром ?lang=ru (или другой язык)
-        const separator = pageUrl.includes('?') ? '&' : '?';
-        const fullUrl = `${baseUrl}${pageUrl}${separator}lang=${lang}`;
-        urls.push({ loc: fullUrl });
+        xml += `    <xhtml:link rel="alternate" hreflang="${lang}" href="${baseUrl}/${lang}${pageUrl}" />\n`;
       });
+      // x-default указываем на дефолтный язык (например, ru)
+      xml += `    <xhtml:link rel="alternate" hreflang="x-default" href="${baseUrl}/ru${pageUrl}" />\n`;
+      xml += `  </url>\n`;
     }
-  });
-
-  // Генерация XML с учетом alternate hreflang
-  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
-  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n`;
-
-  urls.forEach((urlItem) => {
-    xml += `  <url>\n`;
-    xml += `    <loc>${urlItem.loc}</loc>\n`;
-
-    // Формируем alternate-ссылки для всех языков
-    languages.forEach((lang) => {
-      // Здесь необходимо изменить логику формирования alternate URL, 
-      // если используется query-параметр, можно повторно сформировать URL
-      // с нужным lang.
-      // Предположим, что оригинальный URL всегда имеет параметр lang в конце.
-      const alternateUrl = urlItem.loc.replace(/lang=[a-z]{2}/, `lang=${lang}`);
-      xml += `    <xhtml:link rel="alternate" hreflang="${lang}" href="${alternateUrl}" />\n`;
-    });
-    xml += `  </url>\n`;
   });
 
   xml += `</urlset>`;
