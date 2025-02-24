@@ -1,19 +1,19 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { supabaseAdmin } from "@/backend/supabaseClient";
+import { withAuth } from "@/backend/middleware/withAuth";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   if (req.method?.toUpperCase() === "OPTIONS") {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-    return res.status(200).end();
+    res.status(200).end();
+    return;
   }
 
   if (req.method?.toUpperCase() !== "POST") {
-    return res.status(405).json({ error: "Метод не разрешён" });
+    res.status(405).json({ error: `Метод ${req.method} не разрешён` });
+    return;
   }
 
   const { design, html, name } = req.body;
@@ -23,8 +23,12 @@ export default async function handler(
     .insert([{ design, html, name }]);
 
   if (error) {
-    return res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message });
+    return;
   }
 
-  return res.status(200).json({ message: "Шаблон сохранён", data });
+  res.status(200).json({ message: "Шаблон сохранён", data });
+  return;
 }
+
+export default withAuth(handler);
