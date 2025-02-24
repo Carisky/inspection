@@ -4,11 +4,8 @@ import {
   Box,
   TextField,
   Button,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
   CircularProgress,
+  Autocomplete,
 } from '@mui/material';
 
 interface EmailTemplate {
@@ -18,53 +15,67 @@ interface EmailTemplate {
   html: string;
 }
 
+interface MailingList {
+  id: number;
+  name: string;
+  description?: string;
+}
+
 const Newsletter: React.FC = () => {
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
   const [loadingTemplates, setLoadingTemplates] = useState<boolean>(false);
-  const [selectedTemplateId, setSelectedTemplateId] = useState<number | ''>('');
+  const [selectedTemplate, setSelectedTemplate] = useState<EmailTemplate | null>(null);
   const [subject, setSubject] = useState<string>('');
-  const [recipient, setRecipient] = useState<string>('');
   const [sending, setSending] = useState<boolean>(false);
   const [previewHtml, setPreviewHtml] = useState<string>('');
 
-  
+  // Состояния для рассылочного списка
+  const [mailingLists, setMailingLists] = useState<MailingList[]>([]);
+  const [loadingLists, setLoadingLists] = useState<boolean>(false);
+  const [selectedList, setSelectedList] = useState<MailingList | null>(null);
+
+  // Загружаем шаблоны
   useEffect(() => {
     setLoadingTemplates(true);
     fetch('/api/admin/email-templates')
       .then((res) => res.json())
-      .then((data) => {
-        
-        setTemplates(data.data);
-      })
-      .catch((err) => {
-        console.error('Ошибка загрузки шаблонов:', err);
-      })
+      .then((data) => setTemplates(data.data))
+      .catch((err) => console.error('Ошибка загрузки шаблонов:', err))
       .finally(() => setLoadingTemplates(false));
   }, []);
 
-  
+  // Загружаем рассылочные списки
   useEffect(() => {
-    if (selectedTemplateId !== '') {
-      const template = templates.find((t) => t.id === selectedTemplateId);
-      setPreviewHtml(template ? template.html : '');
+    setLoadingLists(true);
+    fetch('/api/admin/lists')
+      .then((res) => res.json())
+      .then((data) => setMailingLists(data.data))
+      .catch((err) => console.error('Ошибка загрузки списков:', err))
+      .finally(() => setLoadingLists(false));
+  }, []);
+
+  // Обновляем превью шаблона, когда выбранный шаблон меняется
+  useEffect(() => {
+    if (selectedTemplate) {
+      setPreviewHtml(selectedTemplate.html);
     } else {
       setPreviewHtml('');
     }
-  }, [selectedTemplateId, templates]);
+  }, [selectedTemplate]);
 
   const handleSendNewsletter = () => {
-    if (!selectedTemplateId || !subject || !recipient) {
+    if (!selectedTemplate || !subject || !selectedList) {
       alert('Пожалуйста, заполните все поля!');
       return;
     }
-
+    setSending(true);
     fetch('/api/admin/send-newsletter', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        templateId: selectedTemplateId,
+        templateId: selectedTemplate.id,
         subject,
-        recipient,
+        listId: selectedList.id,
       }),
     })
       .then((res) => res.json())
@@ -88,28 +99,41 @@ const Newsletter: React.FC = () => {
         Здесь вы можете управлять рассылкой новостей.
       </Typography>
 
-      <FormControl fullWidth sx={{ mt: 2 }}>
-        <InputLabel id="template-select-label">Выберите шаблон</InputLabel>
-        <Select
-          labelId="template-select-label"
-          value={selectedTemplateId}
-          label="Выберите шаблон"
-          onChange={(e) => setSelectedTemplateId(e.target.value as number)}
-        >
-          {loadingTemplates ? (
-            <MenuItem value="">
-              <CircularProgress size={20} />
-            </MenuItem>
-          ) : (
-            templates.map((template) => (
-              <MenuItem key={template.id} value={template.id}>
-                {template.name}
-              </MenuItem>
-            ))
-          )}
-        </Select>
-      </FormControl>
+      {/* Выбор шаблона */}
+      <Box sx={{ mt: 2 }}>
+        {loadingTemplates ? (
+          <CircularProgress size={24} />
+        ) : (
+          <Autocomplete
+            options={templates}
+            getOptionLabel={(option) => option.name}
+            value={selectedTemplate}
+            onChange={(event, newValue) => setSelectedTemplate(newValue)}
+            renderInput={(params) => (
+              <TextField {...params} label="Выберите шаблон" variant="outlined" fullWidth />
+            )}
+          />
+        )}
+      </Box>
 
+      {/* Выбор рассылочного списка */}
+      <Box sx={{ mt: 2 }}>
+        {loadingLists ? (
+          <CircularProgress size={24} />
+        ) : (
+          <Autocomplete
+            options={mailingLists}
+            getOptionLabel={(option) => option.name}
+            value={selectedList}
+            onChange={(event, newValue) => setSelectedList(newValue)}
+            renderInput={(params) => (
+              <TextField {...params} label="Выберите список рассылки" variant="outlined" fullWidth />
+            )}
+          />
+        )}
+      </Box>
+
+      {/* Превью выбранного шаблона */}
       {previewHtml && (
         <Box
           sx={{
@@ -121,13 +145,11 @@ const Newsletter: React.FC = () => {
           }}
         >
           <Typography variant="h6">Превью шаблона:</Typography>
-          <Box
-            sx={{ mt: 1 }}
-            dangerouslySetInnerHTML={{ __html: previewHtml }}
-          />
+          <Box sx={{ mt: 1 }} dangerouslySetInnerHTML={{ __html: previewHtml }} />
         </Box>
       )}
 
+      {/* Форма рассылки */}
       <Box component="form" sx={{ mt: 2 }}>
         <TextField
           label="Тема рассылки"
@@ -136,14 +158,6 @@ const Newsletter: React.FC = () => {
           margin="normal"
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
-        />
-        <TextField
-          label="Email получателя"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={recipient}
-          onChange={(e) => setRecipient(e.target.value)}
         />
         <Button
           variant="contained"
