@@ -64,23 +64,38 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 export const getStaticProps: GetStaticProps<PageProps> = async (context) => {
-  // Вычисляем путь страницы на основе параметров URL
-  const urlPath = "/" + ((context.params?.page as string[])?.join("/") || "");
+  let segments = (context.params?.page as string[]) || [];
+  console.log("Received segments:", segments);
 
-  // Загружаем содержимое текущей страницы
+  // Если segments равны буквально '[[...page]]', считаем, что это пустой массив (главная страница)
+  if (segments.length === 1 && segments[0] === "[[...page]]") {
+    segments = [];
+  }
+
+  const supportedLocales = ["ru", "en", "ua", "pl"];
+
+  // Если в маршруте только один сегмент и он является кодом языка, значит это главная страница
+  let urlPath = "/" + segments.join("/");
+  if (segments.length === 1 && supportedLocales.includes(segments[0])) {
+    urlPath = "/";
+  }
+  console.log("Resolved urlPath:", urlPath);
+
   const builderPage = await builder
     .get("page", {
       userAttributes: { urlPath },
     })
     .toPromise();
 
-  // Загружаем список страниц для меню
+  if (!builderPage) {
+    console.error(`No Builder.io content found for urlPath: "${urlPath}"`);
+  }
+
   const pagesData = await builder.getAll("page", {
     fields: "data.url,data.title",
     options: { noTargeting: true },
   });
 
-  // Преобразуем pagesData к типу Page[]
   const pages: Page[] = pagesData.map((page: any) => ({
     data: {
       url: page.data?.url || "",
@@ -88,9 +103,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async (context) => {
     },
   }));
 
-  // Используем переменную окружения для домена или http://localhost:3000 по умолчанию
   const domain = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-  // asPath вычисляем как urlPath, т.к. resolvedUrl недоступен в getStaticProps
   const asPath = urlPath;
 
   return {
@@ -100,6 +113,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async (context) => {
       domain,
       asPath,
     },
-    revalidate: 5, // ISR: обновление данных каждые 5 секунд
+    revalidate: 5,
   };
 };
+
