@@ -23,43 +23,52 @@ const FadeSlider = ({
   }, [images.length]);
 
   return (
-    <Box
-      sx={{
-        position: "relative",
-        width: imageWidth,
-        height: imageHeight,
-        overflow: "hidden",
-      }}
-    >
-      {images.map((img, index) => (
-        <Box
-          key={index}
-          sx={{
-            position: "absolute",
-            top: 0,
-            left: 0,
+<Box sx={{ position: "relative", width: "100%", height:imageHeight }}>
+  <Box
+    sx={{
+      position: "absolute",
+      top: 0,
+      left: "50%",
+      transform: "translateX(-50%)",
+      width: "100vw",
+      height: imageHeight,
+      overflow: "hidden",
+      zIndex: 1, // по необходимости
+    }}
+  >
+    {images.map((img, index) => (
+      <Box
+        key={index}
+        sx={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          opacity: index === currentIndex ? 1 : 0,
+          transition: "opacity 1s ease-in-out",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <img
+          src={img.url}
+          alt={`Slide ${index + 1}`}
+          style={{
             width: "100%",
             height: "100%",
-            opacity: index === currentIndex ? 1 : 0,
-            transition: "opacity 1s ease-in-out",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            objectFit: "cover",
+            filter:
+              "grayscale(30%) brightness(70%) contrast(80%) blur(0.3px)",
           }}
-        >
-          <img
-            src={img.url}
-            alt={`Slide ${index + 1}`}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              filter: "grayscale(30%) brightness(70%) contrast(80%) blur(0.3px)",
-            }}
-          />
-        </Box>
-      ))}
-    </Box>
+        />
+      </Box>
+    ))}
+  </Box>
+  {/* Другие компоненты внутри контейнера не будут залезать на слайдер */}
+</Box>
+
   );
 };
 

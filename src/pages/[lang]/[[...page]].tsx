@@ -48,7 +48,7 @@ const Index: NextPage<PageProps> = ({ builderPage, pages, domain, asPath }) => {
           marginTop: builderPage?.data?.title === "Home" ? "0" : "7vh",
         }}
       >
-        <Box sx={{ marginTop: isMobile ? "35vh" : "0" }}>
+        <Box sx={{ paddingLeft:"10vw",paddingRight:"10vw",marginTop: isMobile ? "35vh" : "0" }}>
           <BuilderComponent model="page" content={builderPage || undefined} />
         </Box>
       </Box>
