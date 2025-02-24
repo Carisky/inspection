@@ -20,7 +20,7 @@ export const withAuth = (
       return res.status(401).json({ error: 'Неверный токен' });
     }
 
-    // @ts-ignore
+    // @ts-expect-error Assigning to req.admin is safe because we extend the type via AuthenticatedNextApiRequest
     req.admin = adminData; // Добавляем данные администратора в запрос
 
     return handler(req as AuthenticatedNextApiRequest, res);

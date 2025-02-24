@@ -47,7 +47,7 @@ const EmailTemplateEditor: React.FC = () => {
     const editor = emailEditorRef.current?.editor;
     if (!editor) return;
     editor.exportHtml((data: { design: any; html: string }) => {
-      let { design, html } = data;
+      const { design, html } = data;
 
       // Получаем домен из переменной окружения
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
