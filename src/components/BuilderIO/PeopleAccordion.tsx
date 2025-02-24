@@ -9,7 +9,6 @@ import Typography from "@mui/material/Typography";
 import { useTheme, useMediaQuery, Box } from "@mui/material";
 import { useLocaleStore } from "@/stores/useLocaleStore";
 import pallete from "@/palette";
-import Image from "next/image";
 
 export interface Person {
   firstName: string;
@@ -139,7 +138,7 @@ const PeopleAccordion: React.FC<PeopleAccordionProps> = ({
                     gap: "20px",
                   }}
                 >
-                  <Image
+                  <img
                     src={person.photo}
                     alt={`${person.firstName} ${person.lastName}`}
                     width={200}
@@ -148,7 +147,6 @@ const PeopleAccordion: React.FC<PeopleAccordionProps> = ({
                       borderRadius: "5%",
                       marginRight: 8,
                     }}
-                    objectFit="cover" // Ensures the image is properly scaled
                   />
                   <div>
                     <Typography variant="h6">

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Box } from "@mui/material";
-import Image from "next/image";
 
 const FadeSlider = ({
   images = [],
@@ -48,7 +47,7 @@ const FadeSlider = ({
             justifyContent: "center",
           }}
         >
-          <Image
+          <img
             src={img.url}
             alt={`Slide ${index + 1}`}
             style={{

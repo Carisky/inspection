@@ -1,4 +1,3 @@
-import Image from "next/image";
 import React from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
@@ -43,7 +42,7 @@ const ImagesCarousel = ({
     >
       {images.map((img, index) => (
         <div key={index} style={{ padding: "10px", textAlign: "center" }}>
-          <Image
+          <img
             src={img.url}
             alt={`Slide ${index + 1}`}
             style={{
