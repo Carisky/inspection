@@ -1,4 +1,3 @@
-
 import { GetServerSideProps } from 'next';
 import { parse } from 'cookie';
 import { useState } from 'react';
@@ -12,25 +11,60 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Divider
+  Divider,
+  Tabs,
+  Tab
 } from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PeopleIcon from '@mui/icons-material/People';
 import SettingsIcon from '@mui/icons-material/Settings';
 import EmailIcon from '@mui/icons-material/Email';
-import EditIcon from '@mui/icons-material/Edit';
 
 import Dashboard from './elements/Dashboard';
 import Users from './elements/Users';
 import Settings from './elements/Settings';
 import Newsletter from './elements/Newsletter';
 import EmailTemplateEditor from './components/EmailTemplateEditor';
+import MailingListsManager from './components/MailingListsManager';
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import theme from '@/theme';
+import { verifyToken } from '@/backend/utils/auth';
 
 const drawerWidth = 240;
 
+// Компонент для вложенных вкладок в разделе Newsletter
+const NewsletterDashboard = () => {
+  // Возможные вкладки: рассылка, редактор шаблонов, списки рассылки
+  const [subTab, setSubTab] = useState<'send' | 'templateEditor' | 'mailingLists'>('send');
+
+  const handleSubTabChange = (
+    event: React.SyntheticEvent,
+    newValue: 'send' | 'templateEditor' | 'mailingLists'
+  ) => {
+    setSubTab(newValue);
+  };
+
+  return (
+    <Box>
+      <Tabs value={subTab} onChange={handleSubTabChange}>
+        <Tab label="Рассылка" value="send" />
+        <Tab label="Редактор шаблонов" value="templateEditor" />
+        <Tab label="Списки рассылки" value="mailingLists" />
+      </Tabs>
+      <Box sx={{ mt: 2 }}>
+        {subTab === 'send' && <Newsletter />}
+        {subTab === 'templateEditor' && <EmailTemplateEditor />}
+        {subTab === 'mailingLists' && <MailingListsManager />}
+      </Box>
+    </Box>
+  );
+};
+
+
 const AdminDashboard = () => {
   const [selectedTab, setSelectedTab] = useState<
-    'dashboard' | 'users' | 'settings' | 'newsletter' | 'editor'
+    'dashboard' | 'users' | 'settings' | 'newsletter'
   >('dashboard');
 
   const renderContent = () => {
@@ -42,17 +76,19 @@ const AdminDashboard = () => {
       case 'settings':
         return <Settings />;
       case 'newsletter':
-        return <Newsletter />;
-      case 'editor':
-        return <EmailTemplateEditor />;
+        return <NewsletterDashboard />;
       default:
         return null;
     }
   };
 
   return (
+    <ThemeProvider theme={theme}>
     <Box sx={{ display: 'flex' }}>
-      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      <AppBar
+        position="fixed"
+        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+      >
         <Toolbar>
           <Typography variant="h6" noWrap component="div">
             Админ-панель
@@ -70,35 +106,29 @@ const AdminDashboard = () => {
         <Toolbar />
         <Box sx={{ overflow: 'auto' }}>
           <List>
-            <ListItem component="li" onClick={() => setSelectedTab('dashboard')}>
+            <ListItem onClick={() => setSelectedTab('dashboard')}>
               <ListItemIcon>
                 <DashboardIcon />
               </ListItemIcon>
               <ListItemText primary="Панель управления" />
             </ListItem>
-            <ListItem component="li" onClick={() => setSelectedTab('users')}>
+            <ListItem onClick={() => setSelectedTab('users')}>
               <ListItemIcon>
                 <PeopleIcon />
               </ListItemIcon>
               <ListItemText primary="Пользователи" />
             </ListItem>
-            <ListItem component="li" onClick={() => setSelectedTab('settings')}>
+            <ListItem onClick={() => setSelectedTab('settings')}>
               <ListItemIcon>
                 <SettingsIcon />
               </ListItemIcon>
               <ListItemText primary="Настройки" />
             </ListItem>
-            <ListItem component="li" onClick={() => setSelectedTab('newsletter')}>
+            <ListItem onClick={() => setSelectedTab('newsletter')}>
               <ListItemIcon>
                 <EmailIcon />
               </ListItemIcon>
               <ListItemText primary="Newsletter" />
-            </ListItem>
-            <ListItem component="li" onClick={() => setSelectedTab('editor')}>
-              <ListItemIcon>
-                <EditIcon />
-              </ListItemIcon>
-              <ListItemText primary="Editor" />
             </ListItem>
           </List>
           <Divider />
@@ -109,19 +139,20 @@ const AdminDashboard = () => {
         {renderContent()}
       </Box>
     </Box>
+    <CssBaseline />
+    </ThemeProvider>
   );
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const cookieHeader = context.req.headers.cookie || '';
-  const cookies = parse(cookieHeader);
+  const cookies = parse(context.req.headers.cookie || '');
+  const token = cookies.token;
 
-  
-  if (!cookies.token) {
+  if (!token || !verifyToken(token)) {
     return {
       redirect: {
         destination: '/admin/login',
-        permanent: false
+        permanent: false,
       }
     };
   }
