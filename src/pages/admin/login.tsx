@@ -1,4 +1,3 @@
-// src/pages/admin/login.tsx
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import {
@@ -30,12 +29,14 @@ const AdminLoginPage = () => {
     if (!res.ok) {
       setError(data.error);
     } else {
+      // Сохраняем токен в localStorage (при необходимости)
+      localStorage.setItem('token', data.token);
       router.push('/admin');
     }
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 8 }}>
+    <Container maxWidth="md" sx={{ height:"100vh", mt: 8 }}>
       <Paper elevation={3} sx={{ p: 4 }}>
         <Typography variant="h4" component="h1" align="center" gutterBottom>
           Вход в админ-панель
