@@ -2,8 +2,9 @@ import { useRouter } from "next/router";
 import { useLocaleStore } from "@/stores/useLocaleStore";
 import React from "react";
 import Cookies from "js-cookie";
-
-const LanguageSwitcher = () => {
+import Image from "next/image";
+import { Box } from "@mui/material";
+const LanguageSwitcher = ({direction=""}) => {
   const router = useRouter();
   const { locale, setLocale } = useLocaleStore();
   const supportedLocales = ["ru", "en", "ua", "pl"];
@@ -13,8 +14,8 @@ const LanguageSwitcher = () => {
 
     // Обновляем локаль в zustand
     setLocale(newLocale);
-    // Сохраняем выбранную локаль в cookie (например, на 1 год)
-    Cookies.set("locale", newLocale, { expires: 365 });
+    // Сохраняем выбранную локаль в cookie (например, на 1 месяц)
+    Cookies.set("locale", newLocale, { expires: 30 });
 
     // Меняем URL: заменяем текущий языковой сегмент на новый
     const newPath = router.asPath.replace(
@@ -25,20 +26,28 @@ const LanguageSwitcher = () => {
   };
 
   return (
-    <div>
+    <Box sx={{display: "flex", gap: "10px", flexDirection:direction }}>
       {supportedLocales.map((lng) => (
-        <button
+        <Box
           key={lng}
           onClick={() => switchLanguage(lng)}
           style={{
-            fontWeight: locale === lng ? "bold" : "normal",
-            marginRight: "10px",
+            cursor: "pointer",
+            border: locale === lng ? "2px solid #000" : "2px solid transparent",
+            borderRadius: "4px",
+            padding: "2px",
           }}
         >
-          {lng.toUpperCase()}
-        </button>
+          <Image
+            src={`/images/assets/flags/${lng}.png`}
+            alt={lng}
+            width={32}
+            height={32}
+            style={{ display: "block" }}
+          />
+        </Box>
       ))}
-    </div>
+    </Box>
   );
 };
 
