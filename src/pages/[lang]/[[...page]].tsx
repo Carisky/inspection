@@ -2,12 +2,12 @@ import React from "react";
 import { BuilderComponent, builder, useIsPreviewing } from "@builder.io/react";
 import { BuilderContent } from "@builder.io/sdk";
 import DefaultErrorPage from "next/error";
-import Head from "next/head";
 import { GetStaticProps, GetStaticPaths, NextPage } from "next";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import Header from "@/components/BuilderIO/Header";
 import Footer from "@/components/BuilderIO/Footer";
 import Page from "@/interfaces/Page";
+import CustomHead from "@/components/UI/common/CustomHead";
 
 // Инициализация Builder.io (если API ключ задан)
 const apiKey = process.env.NEXT_PUBLIC_BUILDER_API_KEY;
@@ -24,24 +24,6 @@ interface PageProps {
   asPath: string;
 }
 
-// Функция для удаления существующего параметра "lang" из пути
-const removeLangParam = (path: string): string => {
-  try {
-    const url = new URL(path, "http://example.com");
-    url.searchParams.delete("lang");
-    return url.pathname + (url.search || "");
-  } catch (error) {
-    console.log(error)
-    return path;
-  }
-};
-
-// Функция для добавления параметра "lang" корректно
-const addLangParam = (path: string, lang: string): string => {
-  const basePath = removeLangParam(path);
-  const separator = basePath.includes("?") ? "&" : "?";
-  return `${basePath}${separator}lang=${lang}`;
-};
 
 const Index: NextPage<PageProps> = ({ builderPage, pages, domain, asPath }) => {
   const isPreviewing = useIsPreviewing();
@@ -54,30 +36,11 @@ const Index: NextPage<PageProps> = ({ builderPage, pages, domain, asPath }) => {
 
   return (
     <>
-      <Head>
-        <title>{builderPage?.data?.title || "Page"}</title>
-        <link
-          rel="alternate"
-          href={`${domain}${addLangParam(asPath, "ru")}`}
-          hrefLang="ru"
-        />
-        <link
-          rel="alternate"
-          href={`${domain}${addLangParam(asPath, "en")}`}
-          hrefLang="en"
-        />
-        <link
-          rel="alternate"
-          href={`${domain}${addLangParam(asPath, "ua")}`}
-          hrefLang="ua"
-        />
-        <link
-          rel="alternate"
-          href={`${domain}${addLangParam(asPath, "pl")}`}
-          hrefLang="pl"
-        />
-        <link rel="alternate" href={`${domain}/`} hrefLang="x-default" />
-      </Head>
+      <CustomHead
+        title={builderPage?.data?.title || "Page"}
+        domain={domain}
+        asPath={asPath}
+      />
       <Header pages={pages} />
       <Box
         sx={{
