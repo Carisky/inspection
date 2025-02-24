@@ -155,7 +155,7 @@ const PeopleAccordion: React.FC<PeopleAccordionProps> = ({
                     <Typography variant="body2">{positionText}</Typography>
                     {/* Дополнительные контактные данные */}
                     {person.tl && (
-                      <Typography variant="body2">Тел.: {person.tl}</Typography>
+                      <Typography variant="body2">Tel.: {person.tl}</Typography>
                     )}
                     {person.email && (
                       <Typography variant="body2">
