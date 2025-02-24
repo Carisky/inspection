@@ -23,30 +23,16 @@ export const useInitLocale = () => {
   const { locale, setLocale } = useLocaleStore();
 
   useEffect(() => {
-    if (
-      typeof window !== "undefined" &&
-      window.location.search.includes("builder")
-    ) {
-      return;
-    }
 
+
+    // Извлекаем локаль из динамического маршрута (например, /ru/about)
     const urlLocale = router.query.lang as string;
+    // Если локаль не задана в маршруте – используем язык браузера
     const browserLocale = navigator.language.split("-")[0];
     const defaultLocale = urlLocale || browserLocale || "ru";
 
     if (locale !== defaultLocale) {
       setLocale(defaultLocale);
-    }
-
-    if (!urlLocale) {
-      router.replace(
-        {
-          pathname: router.pathname,
-          query: { ...router.query, lang: defaultLocale },
-        },
-        undefined,
-        { shallow: true }
-      );
     }
   }, [router.query.lang, locale, setLocale]);
 };
