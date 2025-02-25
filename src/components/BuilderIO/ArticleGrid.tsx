@@ -1,6 +1,6 @@
 // components/ArticleGrid.tsx
-import React, { useState, useEffect } from 'react';
-import { builder } from '@builder.io/react';
+import React, { useState, useEffect } from "react";
+import { builder } from "@builder.io/react";
 import {
   Grid,
   Card,
@@ -11,8 +11,8 @@ import {
   Button,
   CircularProgress,
   Container,
-} from '@mui/material';
-import { useLocaleStore } from '@/store/useLocaleStore';
+} from "@mui/material";
+import { useLocaleStore } from "@/store/useLocaleStore";
 
 export interface ArticlePreview {
   id?: string;
@@ -23,6 +23,7 @@ export interface ArticlePreview {
     titleUa?: string | { id: string; model: string; value?: string };
     slug?: string;
     image?: string;
+    url?: string; // Добавляем свойство url
     descriptionPl?: string | { id: string; model: string; value?: string };
     descriptionRu?: string | { id: string; model: string; value?: string };
     descriptionEn?: string | { id: string; model: string; value?: string };
@@ -48,14 +49,21 @@ interface ArticleGridProps {
 
 // Функция для извлечения строкового значения
 const getStringValue = (field: any): string => {
-  if (typeof field === 'string') return field;
-  if (field && typeof field === 'object' && 'value' in field && typeof field.value === 'string') {
+  if (typeof field === "string") return field;
+  if (
+    field &&
+    typeof field === "object" &&
+    "value" in field &&
+    typeof field.value === "string"
+  ) {
     return field.value;
   }
-  return '';
+  return "";
 };
 
-export const ArticleGrid: React.FC<ArticleGridProps> = ({ filterByCategory }) => {
+export const ArticleGrid: React.FC<ArticleGridProps> = ({
+  filterByCategory,
+}) => {
   const [previews, setPreviews] = useState<ArticlePreview[]>([]);
   const [loading, setLoading] = useState(true);
   const { locale } = useLocaleStore();
@@ -63,13 +71,13 @@ export const ArticleGrid: React.FC<ArticleGridProps> = ({ filterByCategory }) =>
   useEffect(() => {
     async function fetchPreviews() {
       try {
-        const results = (await builder.getAll('article-preview', {
+        const results = (await builder.getAll("article-preview", {
           limit: 100,
           includeRefs: true,
         })) as ArticlePreview[];
         setPreviews(results);
       } catch (error) {
-        console.error('Ошибка при получении превью статей:', error);
+        console.error("Ошибка при получении превью статей:", error);
       } finally {
         setLoading(false);
       }
@@ -86,7 +94,7 @@ export const ArticleGrid: React.FC<ArticleGridProps> = ({ filterByCategory }) =>
 
   if (loading) {
     return (
-      <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+      <Container sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
         <CircularProgress />
       </Container>
     );
@@ -97,17 +105,23 @@ export const ArticleGrid: React.FC<ArticleGridProps> = ({ filterByCategory }) =>
       <Grid container spacing={3}>
         {filteredPreviews.map((preview) => {
           // Выбор нужного поля для заголовка на основе локали
-          const titleField = `title${locale.charAt(0).toUpperCase() + locale.slice(1)}`;
-          const rawTitle = preview.data[titleField as keyof typeof preview.data] ||
+          const titleField = `title${
+            locale.charAt(0).toUpperCase() + locale.slice(1)
+          }`;
+          const rawTitle =
+            preview.data[titleField as keyof typeof preview.data] ||
             preview.data.titleRu ||
             preview.data.titleEn ||
             preview.data.titlePl ||
             preview.data.titleUa;
-          const title = getStringValue(rawTitle) || 'Без названия';
+          const title = getStringValue(rawTitle) || "Без названия";
 
           // Аналогично для описания
-          const descriptionField = `description${locale.charAt(0).toUpperCase() + locale.slice(1)}`;
-          const rawDescription = preview.data[descriptionField as keyof typeof preview.data] ||
+          const descriptionField = `description${
+            locale.charAt(0).toUpperCase() + locale.slice(1)
+          }`;
+          const rawDescription =
+            preview.data[descriptionField as keyof typeof preview.data] ||
             preview.data.descriptionRu ||
             preview.data.descriptionEn ||
             preview.data.descriptionPl ||
@@ -115,11 +129,15 @@ export const ArticleGrid: React.FC<ArticleGridProps> = ({ filterByCategory }) =>
           const description = getStringValue(rawDescription);
 
           // Выбор названия категории
-          const categoryNameField = `name${locale.charAt(0).toUpperCase() + locale.slice(1)}`;
-          let categoryName = '';
+          const categoryNameField = `name${
+            locale.charAt(0).toUpperCase() + locale.slice(1)
+          }`;
+          let categoryName = "";
           if (preview.data.category?.value) {
             const rawCategoryName =
-              preview.data.category.value[categoryNameField as keyof typeof preview.data.category.value] ||
+              preview.data.category.value[
+                categoryNameField as keyof typeof preview.data.category.value
+              ] ||
               preview.data.category.value.nameRu ||
               preview.data.category.value.nameEn ||
               preview.data.category.value.namePl ||
@@ -128,8 +146,20 @@ export const ArticleGrid: React.FC<ArticleGridProps> = ({ filterByCategory }) =>
           }
 
           return (
-            <Grid item xs={12} sm={6} md={4} key={preview.id || Math.random().toString()}>
-              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              md={4}
+              key={preview.id || Math.random().toString()}
+            >
+              <Card
+                sx={{
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
                 {preview.data.image && (
                   <CardMedia
                     component="img"
@@ -147,13 +177,20 @@ export const ArticleGrid: React.FC<ArticleGridProps> = ({ filterByCategory }) =>
                       <strong>Категория:</strong> {categoryName}
                     </Typography>
                   )}
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mt: 1 }}
+                  >
                     {description}
                   </Typography>
                 </CardContent>
-                {preview.data.slug && (
+                {(preview.data.slug || preview.data.url) && (
                   <CardActions>
-                    <Button size="small" href={`/article${preview.data.slug}`}>
+                    <Button
+                      size="small"
+                      href={preview.data.url || `/article${preview.data.slug}`}
+                    >
                       Читать далее
                     </Button>
                   </CardActions>
