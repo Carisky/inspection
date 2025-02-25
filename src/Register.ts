@@ -11,6 +11,7 @@ import SocialMediaList from "./components/BuilderIO/SocialMediaList";
 import IconTextList from "./components/BuilderIO/IconTextList";
 import Kwiatkowska from "./components/BuilderIO/Contacts/Marketing/Kwiatkowska";
 import PeopleAccordion from "./components/BuilderIO/PeopleAccordion";
+import Krakowska from "./components/BuilderIO/Contacts/Marketing/Krakowska";
 
 const materialIcons = [
   "Info",
@@ -278,6 +279,26 @@ class Register {
             "kom. +48 608 675 834",
             "tel. +48 322 822 062",
             "w.kwiatkowska@tsl-silesia.com.pl",
+          ],
+          subFields: [{ name: "text", type: "string", defaultValue: "Nowy kontakt" }],
+          helperText: "Добавьте или измените контакты",
+        },
+      ],
+    });
+
+    Builder.registerComponent(Krakowska, {
+      name: "Krakowska",
+      description: "Список контактов Daria Krakowska",
+      inputs: [
+        {
+          name: "contacts",
+          type: "list",
+          defaultValue: [
+            "Daria Żmurda - Krakowska",
+            "Dyrektor ds. Handlu i Spedycji",
+            "kom. +48 664 787 417",
+            "tel. +48 32 282 90 62 wew. 20",
+            "d.zmurda@tsl-silesia.com.pl",
           ],
           subFields: [{ name: "text", type: "string", defaultValue: "Nowy kontakt" }],
           helperText: "Добавьте или измените контакты",
