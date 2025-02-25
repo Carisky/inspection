@@ -1,6 +1,7 @@
 import React from "react";
 import { GetStaticProps, GetStaticPaths, NextPage } from "next";
-import { builder, BuilderComponent } from "@builder.io/react";
+import { builder, BuilderComponent, useIsPreviewing } from "@builder.io/react";
+import DefaultErrorPage from "next/error";
 import Header from "@/components/BuilderIO/Header";
 import { Box, useMediaQuery } from "@mui/material";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -31,6 +32,12 @@ const ArticlePage: NextPage<ArticlePageProps> = ({
 }) => {
   // Получаем текущую локаль из Zustand
   const { locale } = useLocaleStore();
+  const isPreviewing = useIsPreviewing();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  // Если контент не найден и не в режиме предпросмотра, возвращаем 404
+  if (!builderPage && !isPreviewing) {
+    return <DefaultErrorPage statusCode={404} />;
+  }
 
   // Определяем SEO-поля в зависимости от локали
   let titleField = "";
@@ -56,7 +63,7 @@ const ArticlePage: NextPage<ArticlePageProps> = ({
       titleField = "seoTitleRu";
       descriptionField = "seoDescriptionRu";
   }
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   // Берём SEO-данные из модели Article. Если поля отсутствуют, подставляем title из контента.
   const seoTitle =
     builderPage?.data?.[titleField] || builderPage?.data?.title || "Article";
@@ -81,10 +88,11 @@ const ArticlePage: NextPage<ArticlePageProps> = ({
           sx={{
             paddingLeft: "10vw",
             paddingRight: "10vw",
-            marginTop: isMobile ? "35vh" : "0",
+            marginTop: isMobile ? "25vh" : "0",
           }}
         >
-          <BuilderComponent model="page" content={builderPage || undefined} />
+          {/* Исправлено: модель изменена на "article" */}
+          <BuilderComponent model="article" content={builderPage || undefined} />
         </Box>
       </Box>
       <SpeedInsights />
