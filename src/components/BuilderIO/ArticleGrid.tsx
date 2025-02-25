@@ -12,29 +12,30 @@ import {
   CircularProgress,
   Container,
 } from '@mui/material';
+import { useLocaleStore } from '@/store/useLocaleStore';
 
 export interface ArticlePreview {
-  id?: string; // id может быть undefined
+  id?: string;
   data: {
-    titlePl?: string;
-    titleRu?: string;
-    titleEn?: string;
-    titleUa?: string;
+    titlePl?: string | { id: string; model: string; value?: string };
+    titleRu?: string | { id: string; model: string; value?: string };
+    titleEn?: string | { id: string; model: string; value?: string };
+    titleUa?: string | { id: string; model: string; value?: string };
     slug?: string;
     image?: string;
-    descriptionPl?: string;
-    descriptionRu?: string;
-    descriptionEn?: string;
-    descriptionUa?: string;
+    descriptionPl?: string | { id: string; model: string; value?: string };
+    descriptionRu?: string | { id: string; model: string; value?: string };
+    descriptionEn?: string | { id: string; model: string; value?: string };
+    descriptionUa?: string | { id: string; model: string; value?: string };
     creationDate?: number;
     category?: {
       id: string;
       model: string;
       value?: {
-        nameUa?: string;
-        namePl?: string;
-        nameEn?: string;
-        nameRu?: string;
+        nameUa?: string | { id: string; model: string; value?: string };
+        namePl?: string | { id: string; model: string; value?: string };
+        nameEn?: string | { id: string; model: string; value?: string };
+        nameRu?: string | { id: string; model: string; value?: string };
         slug?: string;
       };
     };
@@ -42,19 +43,26 @@ export interface ArticlePreview {
 }
 
 interface ArticleGridProps {
-  // Если указать slug категории, компонент отфильтрует статьи,
-  // иначе выведет все превью.
   filterByCategory?: string;
 }
+
+// Функция для извлечения строкового значения
+const getStringValue = (field: any): string => {
+  if (typeof field === 'string') return field;
+  if (field && typeof field === 'object' && 'value' in field && typeof field.value === 'string') {
+    return field.value;
+  }
+  return '';
+};
 
 export const ArticleGrid: React.FC<ArticleGridProps> = ({ filterByCategory }) => {
   const [previews, setPreviews] = useState<ArticlePreview[]>([]);
   const [loading, setLoading] = useState(true);
+  const { locale } = useLocaleStore();
 
   useEffect(() => {
     async function fetchPreviews() {
       try {
-        // Получаем превью статей с includeRefs, чтобы вложенные данные категории были доступны в data.category.value
         const results = (await builder.getAll('article-preview', {
           limit: 100,
           includeRefs: true,
@@ -69,7 +77,6 @@ export const ArticleGrid: React.FC<ArticleGridProps> = ({ filterByCategory }) =>
     fetchPreviews();
   }, []);
 
-  // Если передан параметр фильтрации, оставляем только статьи, у которых slug категории совпадает.
   const filteredPreviews = filterByCategory
     ? previews.filter((item) => {
         const catSlug = item.data.category?.value?.slug;
@@ -89,29 +96,36 @@ export const ArticleGrid: React.FC<ArticleGridProps> = ({ filterByCategory }) =>
     <Container sx={{ mt: 4 }}>
       <Grid container spacing={3}>
         {filteredPreviews.map((preview) => {
-          // Определяем заголовок (добавьте свою логику для выбора языка)
-          const title =
+          // Выбор нужного поля для заголовка на основе локали
+          const titleField = `title${locale.charAt(0).toUpperCase() + locale.slice(1)}`;
+          const rawTitle = preview.data[titleField as keyof typeof preview.data] ||
             preview.data.titleRu ||
             preview.data.titleEn ||
             preview.data.titlePl ||
-            preview.data.titleUa ||
-            'Без названия';
+            preview.data.titleUa;
+          const title = getStringValue(rawTitle) || 'Без названия';
 
           // Аналогично для описания
-          const description =
+          const descriptionField = `description${locale.charAt(0).toUpperCase() + locale.slice(1)}`;
+          const rawDescription = preview.data[descriptionField as keyof typeof preview.data] ||
             preview.data.descriptionRu ||
             preview.data.descriptionEn ||
             preview.data.descriptionPl ||
-            preview.data.descriptionUa ||
-            '';
+            preview.data.descriptionUa;
+          const description = getStringValue(rawDescription);
 
-          // Если данные категории доступны, выбираем название
-          const categoryName = preview.data.category?.value
-            ? preview.data.category.value.nameRu ||
+          // Выбор названия категории
+          const categoryNameField = `name${locale.charAt(0).toUpperCase() + locale.slice(1)}`;
+          let categoryName = '';
+          if (preview.data.category?.value) {
+            const rawCategoryName =
+              preview.data.category.value[categoryNameField as keyof typeof preview.data.category.value] ||
+              preview.data.category.value.nameRu ||
               preview.data.category.value.nameEn ||
               preview.data.category.value.namePl ||
-              preview.data.category.value.nameUa
-            : null;
+              preview.data.category.value.nameUa;
+            categoryName = getStringValue(rawCategoryName);
+          }
 
           return (
             <Grid item xs={12} sm={6} md={4} key={preview.id || Math.random().toString()}>
