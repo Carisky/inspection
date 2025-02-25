@@ -1,19 +1,30 @@
-// components/CustomHead.tsx
 import React from "react";
-import Head from "next/head";
+import { NextSeo } from "next-seo";
 
 interface CustomHeadProps {
-  title?: string;
+  title: string;
+  description: string;
   domain: string;
   asPath: string;
 }
 
-const CustomHead: React.FC<CustomHeadProps> = ({ title = "Page", domain, asPath }) => {
+const CustomHead: React.FC<CustomHeadProps> = ({ title, description, domain, asPath }) => {
   const languages = ["ru", "en", "ua", "pl"];
 
   return (
-    <Head>
-      <title>{title}</title>
+    <>
+      <NextSeo
+        title={title}
+        description={description}
+        openGraph={{
+          title,
+          description,
+          url: `${domain}${asPath}`,
+        }}
+        twitter={{
+          cardType: "summary",
+        }}
+      />
       {languages.map((lang) => (
         <link
           key={lang}
@@ -23,7 +34,7 @@ const CustomHead: React.FC<CustomHeadProps> = ({ title = "Page", domain, asPath 
         />
       ))}
       <link rel="alternate" href={`${domain}/ru${asPath}`} hrefLang="x-default" />
-    </Head>
+    </>
   );
 };
 

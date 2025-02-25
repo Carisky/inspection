@@ -8,6 +8,7 @@ import Header from "@/components/BuilderIO/Header";
 import Footer from "@/components/BuilderIO/Footer";
 import Page from "@/interfaces/Page";
 import CustomHead from "@/components/UI/common/CustomHead";
+import { useLocaleStore } from "@/store/useLocaleStore";
 
 // Инициализация Builder.io (если API ключ задан)
 const apiKey = process.env.NEXT_PUBLIC_BUILDER_API_KEY;
@@ -24,20 +25,52 @@ interface PageProps {
   asPath: string;
 }
 
-
 const Index: NextPage<PageProps> = ({ builderPage, pages, domain, asPath }) => {
   const isPreviewing = useIsPreviewing();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  // Получаем текущую локаль из Zustand
+  const { locale } = useLocaleStore();
+
   if (!builderPage && !isPreviewing) {
     return <DefaultErrorPage statusCode={404} />;
   }
 
+  // Определяем поля SEO в зависимости от локали
+  let titleField = "";
+  let descriptionField = "";
+  switch (locale) {
+    case "ru":
+      titleField = "seoTitleRu";
+      descriptionField = "seoDescriptionRu";
+      break;
+    case "en":
+      titleField = "seoTitleEn";
+      descriptionField = "seoDescriptionEn";
+      break;
+    case "ua":
+      titleField = "seoTitleUa";
+      descriptionField = "seoDescriptionUa";
+      break;
+    case "pl":
+      titleField = "seoTitlePl";
+      descriptionField = "seoDescriptionPl";
+      break;
+    default:
+      titleField = "seoTitleRu";
+      descriptionField = "seoDescriptionRu";
+  }
+
+  const seoTitle =
+    builderPage?.data?.[titleField] || builderPage?.data?.title || "Page";
+  const seoDescription = builderPage?.data?.[descriptionField] || "";
+  console.log(seoTitle,seoDescription)
   return (
     <>
       <CustomHead
-        title={builderPage?.data?.title || "Page"}
+        title={seoTitle}
+        description={seoDescription}
         domain={domain}
         asPath={asPath}
       />
@@ -48,7 +81,13 @@ const Index: NextPage<PageProps> = ({ builderPage, pages, domain, asPath }) => {
           marginTop: builderPage?.data?.title === "Home" ? "0" : "7vh",
         }}
       >
-        <Box sx={{ paddingLeft:"10vw",paddingRight:"10vw",marginTop: isMobile ? "35vh" : "0" }}>
+        <Box
+          sx={{
+            paddingLeft: "10vw",
+            paddingRight: "10vw",
+            marginTop: isMobile ? "35vh" : "0",
+          }}
+        >
           <BuilderComponent model="page" content={builderPage || undefined} />
         </Box>
       </Box>
@@ -116,4 +155,3 @@ export const getStaticProps: GetStaticProps<PageProps> = async (context) => {
     revalidate: 5,
   };
 };
-

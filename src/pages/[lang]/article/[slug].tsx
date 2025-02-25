@@ -6,6 +6,7 @@ import { Box } from "@mui/material";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Page from "@/interfaces/Page";
 import CustomHead from "@/components/UI/common/CustomHead";
+import { useLocaleStore } from "@/store/useLocaleStore";
 
 const apiKey = process.env.NEXT_PUBLIC_BUILDER_API_KEY;
 if (apiKey) {
@@ -27,10 +28,44 @@ const ArticlePage: NextPage<ArticlePageProps> = ({
   domain,
   asPath,
 }) => {
+  // Получаем текущую локаль из Zustand
+  const { locale } = useLocaleStore();
+
+  // Определяем SEO-поля в зависимости от локали
+  let titleField = "";
+  let descriptionField = "";
+  switch (locale) {
+    case "ru":
+      titleField = "seoTitleRu";
+      descriptionField = "seoDescriptionRu";
+      break;
+    case "en":
+      titleField = "seoTitleEn";
+      descriptionField = "seoDescriptionEn";
+      break;
+    case "ua":
+      titleField = "seoTitleUa";
+      descriptionField = "seoDescriptionUa";
+      break;
+    case "pl":
+      titleField = "seoTitlePl";
+      descriptionField = "seoDescriptionPl";
+      break;
+    default:
+      titleField = "seoTitleRu";
+      descriptionField = "seoDescriptionRu";
+  }
+
+  // Берём SEO-данные из модели Article. Если поля отсутствуют, подставляем title из контента.
+  const seoTitle =
+    builderPage?.data?.[titleField] || builderPage?.data?.title || "Article";
+  const seoDescription = builderPage?.data?.[descriptionField] || "";
+
   return (
     <>
       <CustomHead
-        title={builderPage?.data?.title || "Article"}
+        title={seoTitle}
+        description={seoDescription}
         domain={domain}
         asPath={asPath}
       />
@@ -73,7 +108,6 @@ export const getStaticProps: GetStaticProps<ArticlePageProps> = async (context) 
     },
   }));
 
-  // Определяем домен через переменную окружения или по умолчанию
   const domain = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   const asPath = `/article/${slug}`;
 
@@ -84,6 +118,6 @@ export const getStaticProps: GetStaticProps<ArticlePageProps> = async (context) 
       domain,
       asPath,
     },
-    revalidate: 5, // ISR: обновление данных каждые 5 секунд
+    revalidate: 5,
   };
 };
