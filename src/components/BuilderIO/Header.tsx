@@ -15,7 +15,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import pallete from "@/palette";
 import Page from "@/interfaces/Page";
 import Link from "next/link";
-import { useInitLocale } from "@/stores/useLocaleStore";
+import { useInitLocale } from "@/store/useLocaleStore";
 import { Call, Mail, Map, Home } from "@mui/icons-material";
 import LanguageSwitcher from "../UI/common/LanguageSwitcher";
 

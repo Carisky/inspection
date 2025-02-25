@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 import * as Icons from "@mui/icons-material";
-import { useLocaleStore } from "@/stores/useLocaleStore";
+import { useLocaleStore } from "@/store/useLocaleStore";
 import pallete from "@/palette";
 
 interface IconTextItem {

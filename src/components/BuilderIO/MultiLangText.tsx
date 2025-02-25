@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocaleStore } from "@/stores/useLocaleStore";
+import { useLocaleStore } from "@/store/useLocaleStore";
 import { Typography } from "@mui/material";
 
 interface MultiLangTextProps {

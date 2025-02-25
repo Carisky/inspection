@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocaleStore } from "@/stores/useLocaleStore";
+import { useLocaleStore } from "@/store/useLocaleStore";
 import { Box, Divider, Typography } from "@mui/material";
 import pallete from "@/palette";
 

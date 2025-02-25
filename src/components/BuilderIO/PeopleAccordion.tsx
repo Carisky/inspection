@@ -7,7 +7,7 @@ import Grid from "@mui/material/Grid";
 import BusinessIcon from "@mui/icons-material/Business";
 import Typography from "@mui/material/Typography";
 import { useTheme, useMediaQuery, Box } from "@mui/material";
-import { useLocaleStore } from "@/stores/useLocaleStore";
+import { useLocaleStore } from "@/store/useLocaleStore";
 import pallete from "@/palette";
 
 export interface Person {

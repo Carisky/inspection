@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useLocaleStore } from "@/stores/useLocaleStore";
+import { useLocaleStore } from "@/store/useLocaleStore";
 import React from "react";
 import Cookies from "js-cookie";
 import Image from "next/image";
