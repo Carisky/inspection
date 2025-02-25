@@ -2,11 +2,12 @@ import React from "react";
 import { GetStaticProps, GetStaticPaths, NextPage } from "next";
 import { builder, BuilderComponent } from "@builder.io/react";
 import Header from "@/components/BuilderIO/Header";
-import { Box } from "@mui/material";
+import { Box, useMediaQuery } from "@mui/material";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Page from "@/interfaces/Page";
 import CustomHead from "@/components/UI/common/CustomHead";
 import { useLocaleStore } from "@/store/useLocaleStore";
+import theme from "@/theme";
 
 const apiKey = process.env.NEXT_PUBLIC_BUILDER_API_KEY;
 if (apiKey) {
@@ -55,7 +56,7 @@ const ArticlePage: NextPage<ArticlePageProps> = ({
       titleField = "seoTitleRu";
       descriptionField = "seoDescriptionRu";
   }
-
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   // Берём SEO-данные из модели Article. Если поля отсутствуют, подставляем title из контента.
   const seoTitle =
     builderPage?.data?.[titleField] || builderPage?.data?.title || "Article";
@@ -70,8 +71,21 @@ const ArticlePage: NextPage<ArticlePageProps> = ({
         asPath={asPath}
       />
       <Header pages={pages} />
-      <Box>
-        <BuilderComponent model="article" content={builderPage} />
+      <Box
+        sx={{
+          minHeight: "80vh",
+          marginTop: builderPage?.data?.title === "Home" ? "0" : "7vh",
+        }}
+      >
+        <Box
+          sx={{
+            paddingLeft: "10vw",
+            paddingRight: "10vw",
+            marginTop: isMobile ? "35vh" : "0",
+          }}
+        >
+          <BuilderComponent model="page" content={builderPage || undefined} />
+        </Box>
       </Box>
       <SpeedInsights />
     </>
