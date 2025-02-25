@@ -9,6 +9,7 @@ import Page from "@/interfaces/Page";
 import CustomHead from "@/components/UI/common/CustomHead";
 import { useLocaleStore } from "@/store/useLocaleStore";
 import theme from "@/theme";
+import Footer from "@/components/BuilderIO/Footer";
 
 const apiKey = process.env.NEXT_PUBLIC_BUILDER_API_KEY;
 if (apiKey) {
@@ -95,6 +96,7 @@ const ArticlePage: NextPage<ArticlePageProps> = ({
           <BuilderComponent model="article" content={builderPage || undefined} />
         </Box>
       </Box>
+      <Footer />
       <SpeedInsights />
     </>
   );
