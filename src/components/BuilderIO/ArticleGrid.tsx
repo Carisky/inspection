@@ -188,8 +188,11 @@ export const ArticleGrid: React.FC<ArticleGridProps> = ({
                 {(preview.data.slug || preview.data.url) && (
                   <CardActions>
                     <Button
+                     
                       size="small"
-                      href={preview.data.url || `/article/${preview.data.slug}`}
+                     
+                      href={preview.data.url || preview.data.url || `/article/${preview.data.slug}`}
+                    
                     >
                       Читать далее
                     </Button>
