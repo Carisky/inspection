@@ -13,42 +13,49 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(400).json({ error: 'emails должен быть массивом и listId обязателен' });
   }
 
-  const results = [];
-  for (const email of emails) {
-    // Проверка существования клиента
-    const { data: existing } = await supabaseAdmin
-      .from('clients')
-      .select('*')
-      .eq('email', email)
-      .maybeSingle();
-    let clientId;
-    if (existing) {
-      clientId = existing.id;
-    } else {
-      const { data: clientData, error: clientError } = await supabaseAdmin
+  try {
+    // Обработка всех email параллельно
+    const results = await Promise.all(emails.map(async (email) => {
+      // Проверяем, существует ли клиент
+      const { data: existing, error: checkError } = await supabaseAdmin
         .from('clients')
-        .insert([{ email }])
-        .select('id')
+        .select('*')
+        .eq('email', email)
         .maybeSingle();
-      if (clientError) {
-        results.push({ email, error: clientError.message });
-        continue;
+
+      if (checkError) {
+        return { email, error: checkError.message };
       }
-      clientId = clientData?.id;
-    }
 
-    // Создаем запись подписки
-    const { data: subData, error: subError } = await supabaseAdmin
-      .from('clients_lists')
-      .insert([{ client_id: clientId, list_id: listId }]);
-    if (subError) {
-      results.push({ email, error: subError.message });
-    } else {
-      results.push({ email, subscription: subData });
-    }
+      let clientId;
+      if (existing) {
+        clientId = existing.id;
+      } else {
+        const { data: clientData, error: clientError } = await supabaseAdmin
+          .from('clients')
+          .insert([{ email }])
+          .select('id')
+          .maybeSingle();
+        if (clientError) {
+          return { email, error: clientError.message };
+        }
+        clientId = clientData?.id;
+      }
+
+      // Создаем запись подписки
+      const { data: subData, error: subError } = await supabaseAdmin
+        .from('clients_lists')
+        .insert([{ client_id: clientId, list_id: listId }]);
+      if (subError) {
+        return { email, error: subError.message };
+      }
+      return { email, subscription: subData };
+    }));
+
+    return res.status(201).json({ data: results });
+  } catch (err: any) {
+    return res.status(500).json({ error: 'Ошибка импорта CSV: ' + err.message });
   }
-
-  return res.status(201).json({ data: results });
 }
 
 export default withAuth(handler);
