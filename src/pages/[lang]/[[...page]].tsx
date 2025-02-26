@@ -131,7 +131,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async (context) => {
   }
 
   const pagesData = await builder.getAll("page", {
-    fields: "data.url,data.title",
+    fields: "data.url,data.title,data.children",
     options: { noTargeting: true },
   });
 
@@ -139,6 +139,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async (context) => {
     data: {
       url: page.data?.url || "",
       title: page.data?.title || "",
+      children: page.data?.children || []
     },
   }));
 

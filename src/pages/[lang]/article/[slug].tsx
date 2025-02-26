@@ -11,6 +11,7 @@ import { useLocaleStore } from "@/store/useLocaleStore";
 import theme from "@/theme";
 import Footer from "@/components/BuilderIO/Footer";
 
+// Инициализация Builder.io (если API ключ задан)
 const apiKey = process.env.NEXT_PUBLIC_BUILDER_API_KEY;
 if (apiKey) {
   builder.init(apiKey);
@@ -35,6 +36,7 @@ const ArticlePage: NextPage<ArticlePageProps> = ({
   const { locale } = useLocaleStore();
   const isPreviewing = useIsPreviewing();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   // Если контент не найден и не в режиме предпросмотра, возвращаем 404
   if (!builderPage && !isPreviewing) {
     return <DefaultErrorPage statusCode={404} />;
@@ -92,7 +94,7 @@ const ArticlePage: NextPage<ArticlePageProps> = ({
             marginTop: isMobile ? "25vh" : "0",
           }}
         >
-          {/* Исправлено: модель изменена на "article" */}
+          {/* Используем модель "article" */}
           <BuilderComponent model="article" content={builderPage || undefined} />
         </Box>
       </Box>
@@ -119,8 +121,9 @@ export const getStaticProps: GetStaticProps<ArticlePageProps> = async (context) 
     })
     .toPromise();
 
+  // Получаем все страницы с нужными полями (url, title и children)
   const pagesData = await builder.getAll("page", {
-    fields: "data.url,data.title",
+    fields: "data.url,data.title,data.children",
     options: { noTargeting: true },
   });
 
@@ -129,6 +132,7 @@ export const getStaticProps: GetStaticProps<ArticlePageProps> = async (context) 
     data: {
       url: page.data?.url || "",
       title: page.data?.title || "",
+      children: page.data?.children || [],
     },
   }));
 
