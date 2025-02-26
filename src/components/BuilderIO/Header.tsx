@@ -57,13 +57,15 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
           }}
         >
           <Box>
-            <Image
-              src="/images/assets/nav/cropped-logo-z-napisem-z-R_przez.png"
-              alt="Company Logo"
-              width={200}
-              height={200}
-              priority
-            />
+            <Link href={"/"}>
+              <Image
+                src="/images/assets/nav/cropped-logo-z-napisem-z-R_przez.png"
+                alt="Company Logo"
+                width={200}
+                height={200}
+                priority
+              />
+            </Link>
           </Box>
           <Box
             sx={{
@@ -76,19 +78,39 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Map sx={{ marginRight: "10px", color: pallete.common_colors.main_color }} />
+              <Map
+                sx={{
+                  marginRight: "10px",
+                  color: pallete.common_colors.main_color,
+                }}
+              />
               ul. Rycerska 9, 41-902 Bytom
             </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Call sx={{ marginRight: "10px", color: pallete.common_colors.main_color }} />
+              <Call
+                sx={{
+                  marginRight: "10px",
+                  color: pallete.common_colors.main_color,
+                }}
+              />
               +48 (32) 282 90 62
             </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Call sx={{ marginRight: "10px", color: pallete.common_colors.main_color }} />
+              <Call
+                sx={{
+                  marginRight: "10px",
+                  color: pallete.common_colors.main_color,
+                }}
+              />
               +48 (32) 281 34 02
             </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Mail sx={{ marginRight: "10px", color: pallete.common_colors.main_color }} />
+              <Mail
+                sx={{
+                  marginRight: "10px",
+                  color: pallete.common_colors.main_color,
+                }}
+              />
               office@tsl-group.pl
             </Box>
           </Box>
@@ -195,7 +217,9 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
 const MobileHeader = ({ pages }: HeaderProps) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   // Храним развёрнутое состояние для папок (ключ – URL родительской страницы)
-  const [expandedFolders, setExpandedFolders] = useState<{ [key: string]: boolean }>({});
+  const [expandedFolders, setExpandedFolders] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   const toggleDrawer = (open: boolean) => () => {
     setDrawerOpen(open);
@@ -233,7 +257,10 @@ const MobileHeader = ({ pages }: HeaderProps) => {
             priority
           />
         </Box>
-        <IconButton onClick={toggleDrawer(true)} sx={{ color: pallete.common_colors.white }}>
+        <IconButton
+          onClick={toggleDrawer(true)}
+          sx={{ color: pallete.common_colors.white }}
+        >
           <MenuIcon
             sx={{
               color: pallete.common_colors.main_color,
@@ -304,7 +331,9 @@ const MobileHeader = ({ pages }: HeaderProps) => {
             })}
           </List>
           {/* Переключатель языков */}
-          <Box sx={{ padding: "1rem", display: "flex", justifyContent: "center" }}>
+          <Box
+            sx={{ padding: "1rem", display: "flex", justifyContent: "center" }}
+          >
             <LanguageSwitcher direction="row" />
           </Box>
         </Box>
@@ -314,7 +343,7 @@ const MobileHeader = ({ pages }: HeaderProps) => {
 };
 
 const Header = ({ pages }: HeaderProps) => {
-  console.log(pages)
+  console.log(pages);
   useInitLocale();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
