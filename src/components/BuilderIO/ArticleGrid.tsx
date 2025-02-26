@@ -68,6 +68,15 @@ export const ArticleGrid: React.FC<ArticleGridProps> = ({
   const [loading, setLoading] = useState(true);
   const { locale } = useLocaleStore();
 
+  // Маппинг переводов для кнопки "Read more"
+  const readMoreTexts: Record<string, string> = {
+    ru: "Читать далее",
+    en: "Read more",
+    ua: "Читати далі",
+    pl: "Czytaj więcej",
+  };
+  const readMoreText = readMoreTexts[locale] || readMoreTexts.en;
+
   useEffect(() => {
     async function fetchPreviews() {
       try {
@@ -188,13 +197,10 @@ export const ArticleGrid: React.FC<ArticleGridProps> = ({
                 {(preview.data.slug || preview.data.url) && (
                   <CardActions>
                     <Button
-                     
                       size="small"
-                     
-                      href={preview.data.url || preview.data.url || `/article/${preview.data.slug}`}
-                    
+                      href={preview.data.url || `/article/${preview.data.slug}`}
                     >
-                      Читать далее
+                      {readMoreText}
                     </Button>
                   </CardActions>
                 )}
