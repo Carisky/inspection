@@ -141,13 +141,16 @@ const PeopleAccordion: React.FC<PeopleAccordionProps> = ({
                   <img
                     src={person.photo}
                     alt={`${person.firstName} ${person.lastName}`}
-                    width={200}
-                    height={200} // Ensure the image is properly sized
+                    width={300}
+                    height={200}
                     style={{
+                      objectFit: "cover", // масштабирует изображение с обрезкой лишнего
+                      objectPosition: "center", // центрирует изображение
                       borderRadius: "5%",
                       marginRight: 8,
                     }}
                   />
+
                   <div>
                     <Typography variant="h6">
                       {person.firstName} {person.lastName}
