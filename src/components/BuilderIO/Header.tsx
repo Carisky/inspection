@@ -12,11 +12,11 @@ import {
 } from "@mui/material";
 import Image from "next/image";
 import MenuIcon from "@mui/icons-material/Menu";
+import { Call, Mail, Map, Home } from "@mui/icons-material";
+import Link from "next/link";
 import pallete from "@/palette";
 import Page from "@/interfaces/Page";
-import Link from "next/link";
 import { useInitLocale } from "@/store/useLocaleStore";
-import { Call, Mail, Map, Home } from "@mui/icons-material";
 import LanguageSwitcher from "../UI/common/LanguageSwitcher";
 
 interface HeaderProps {
@@ -24,8 +24,12 @@ interface HeaderProps {
 }
 
 const DesktopHeader = ({ pages }: HeaderProps) => {
+  // Храним URL папки, над которой сейчас наведен курсор
+  const [activeFolder, setActiveFolder] = useState<string | null>(null);
+
   return (
     <Box>
+      {/* Верхняя полоска */}
       <Box
         sx={{
           backgroundColor: pallete.common_colors.main_color,
@@ -33,6 +37,7 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
           height: "3vh",
         }}
       />
+      {/* Контактная информация */}
       <Box
         sx={{
           width: "100vw",
@@ -71,33 +76,26 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Map
-                sx={{ marginRight: "10px", color: pallete.common_colors.main_color }}
-              />
+              <Map sx={{ marginRight: "10px", color: pallete.common_colors.main_color }} />
               ul. Rycerska 9, 41-902 Bytom
             </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Call
-                sx={{ marginRight: "10px", color: pallete.common_colors.main_color }}
-              />
+              <Call sx={{ marginRight: "10px", color: pallete.common_colors.main_color }} />
               +48 (32) 282 90 62
             </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Call
-                sx={{ marginRight: "10px", color: pallete.common_colors.main_color }}
-              />
+              <Call sx={{ marginRight: "10px", color: pallete.common_colors.main_color }} />
               +48 (32) 281 34 02
             </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Mail
-                sx={{ marginRight: "10px", color: pallete.common_colors.main_color }}
-              />
+              <Mail sx={{ marginRight: "10px", color: pallete.common_colors.main_color }} />
               office@tsl-group.pl
             </Box>
           </Box>
           <LanguageSwitcher direction="column" />
         </Box>
       </Box>
+      {/* Основное меню */}
       <Box
         sx={{
           width: "100%",
@@ -120,33 +118,71 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
           }}
         >
           {pages && pages.length > 0 ? (
-            pages.map((page) => (
-              <Box
-                key={page.data.url}
-                sx={{
-                  flexGrow: 1,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  cursor: "pointer",
-                  color: pallete.common_colors.white,
-                  ":hover": {
-                    backgroundColor: pallete.elements.nav_element_hover,
-                    transition: "ease-in",
-                  },
-                }}
-              >
-                <a
-                  href={page.data.url}
-                  style={{
+            pages.map((page) => {
+              const hasChildren =
+                page.data.children && page.data.children.length > 0;
+              return (
+                <Box
+                  key={page.data.url}
+                  onMouseEnter={() => {
+                    if (hasChildren) setActiveFolder(page.data.url);
+                  }}
+                  onMouseLeave={() => {
+                    if (hasChildren) setActiveFolder(null);
+                  }}
+                  sx={{
+                    position: "relative",
+                    flexGrow: 1,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    cursor: "pointer",
                     color: pallete.common_colors.white,
-                    textDecoration: "none",
+                    ":hover": {
+                      backgroundColor: pallete.elements.nav_element_hover,
+                      transition: "ease-in",
+                    },
                   }}
                 >
-                  {page.data.url === "/" ? <Home /> : page.data.title}
-                </a>
-              </Box>
-            ))
+                  <Link
+                    href={page.data.url}
+                    style={{
+                      color: pallete.common_colors.white,
+                      textDecoration: "none",
+                    }}
+                  >
+                    {page.data.url === "/" ? <Home /> : page.data.title}
+                  </Link>
+                  {hasChildren && activeFolder === page.data.url && (
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: "100%",
+                        left: 0,
+                        backgroundColor: pallete.elements.nav,
+                        padding: "0.5rem",
+                        boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
+                        zIndex: 20,
+                      }}
+                    >
+                      {page.data.children!.map((child) => (
+                        <Box key={child.url} sx={{ padding: "0.5rem 1rem" }}>
+                          <Link
+                            href={"/"}
+                            style={{
+                              color: pallete.common_colors.white,
+                              textDecoration: "none",
+                            }}
+                          >
+                            <Typography>{child.title}</Typography>
+                          </Link>
+                        </Box>
+                      ))}
+                    </Box>
+                  )}
+                </Box>
+              );
+            })
           ) : (
             <Box>Меню не доступно</Box>
           )}
@@ -158,9 +194,15 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
 
 const MobileHeader = ({ pages }: HeaderProps) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  // Храним развёрнутое состояние для папок (ключ – URL родительской страницы)
+  const [expandedFolders, setExpandedFolders] = useState<{ [key: string]: boolean }>({});
 
   const toggleDrawer = (open: boolean) => () => {
     setDrawerOpen(open);
+  };
+
+  const toggleFolder = (url: string) => {
+    setExpandedFolders((prev) => ({ ...prev, [url]: !prev[url] }));
   };
 
   return (
@@ -216,27 +258,52 @@ const MobileHeader = ({ pages }: HeaderProps) => {
           onKeyDown={toggleDrawer(false)}
         >
           <List>
-            {pages.map((page) => (
-              <React.Fragment key={page.data.url}>
-                <ListItemButton>
-                  <Link href={page.data.url}>
-                    <Typography
-                      sx={{
-                        color: pallete.common_colors.main_color,
-                        fontWeight: 700,
-                        fontSize: 20,
-                        marginTop: "10px",
-                      }}
-                    >
-                      {page.data.title}
-                    </Typography>
-                  </Link>
-                </ListItemButton>
-                <Divider sx={{ bgcolor: "grey.600", my: 2 }} />
-              </React.Fragment>
-            ))}
+            {pages.map((page) => {
+              const hasChildren =
+                page.data.children && page.data.children.length > 0;
+              return (
+                <React.Fragment key={page.data.url}>
+                  <ListItemButton
+                    onClick={() => hasChildren && toggleFolder(page.data.url)}
+                  >
+                    <Link href={page.data.url}>
+                      <Typography
+                        sx={{
+                          color: pallete.common_colors.main_color,
+                          fontWeight: 700,
+                          fontSize: 20,
+                          marginTop: "10px",
+                        }}
+                      >
+                        {page.data.title}
+                      </Typography>
+                    </Link>
+                  </ListItemButton>
+                  {hasChildren && expandedFolders[page.data.url] && (
+                    <Box sx={{ pl: 4 }}>
+                      {page.data.children!.map((child) => (
+                        <ListItemButton key={child.url}>
+                          <Link href={"/"}>
+                            <Typography
+                              sx={{
+                                color: pallete.common_colors.main_color,
+                                fontSize: 18,
+                                marginTop: "10px",
+                              }}
+                            >
+                              {child.title}
+                            </Typography>
+                          </Link>
+                        </ListItemButton>
+                      ))}
+                    </Box>
+                  )}
+                  <Divider sx={{ bgcolor: "grey.600", my: 2 }} />
+                </React.Fragment>
+              );
+            })}
           </List>
-          {/* Добавляем переключатель языков в нижней части меню */}
+          {/* Переключатель языков */}
           <Box sx={{ padding: "1rem", display: "flex", justifyContent: "center" }}>
             <LanguageSwitcher direction="row" />
           </Box>
@@ -247,6 +314,7 @@ const MobileHeader = ({ pages }: HeaderProps) => {
 };
 
 const Header = ({ pages }: HeaderProps) => {
+  console.log(pages)
   useInitLocale();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
