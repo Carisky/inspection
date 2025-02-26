@@ -120,24 +120,33 @@ class Register {
       inputs: [
         {
           name: "title",
-          type: "string",
-          defaultValue: "Sample Title",
-        },
-        {
-          name: "image",
-          type: "file",
-          allowedFileTypes: ["jpeg", "jpg", "png", "webp"],
-          defaultValue: "https://via.placeholder.com/300",
+          type: "object",
+          subFields: [
+            { name: "ru", type: "string", defaultValue: "Заголовок (RU)" },
+            { name: "en", type: "string", defaultValue: "Title (EN)" },
+            { name: "ua", type: "string", defaultValue: "Заголовок (UA)" },
+            { name: "pl", type: "string", defaultValue: "Tytuł (PL)" },
+          ],
         },
         {
           name: "excerpt",
+          type: "object",
+          subFields: [
+            { name: "ru", type: "string", defaultValue: "Описание (RU)" },
+            { name: "en", type: "string", defaultValue: "Excerpt (EN)" },
+            { name: "ua", type: "string", defaultValue: "Опис (UA)" },
+            { name: "pl", type: "string", defaultValue: "Opis (PL)" },
+          ],
+        },
+        {
+          name: "image",
           type: "string",
-          defaultValue: "Sample excerpt...",
+          defaultValue: "https://via.placeholder.com/600x300",
         },
         {
           name: "slug",
           type: "string",
-          defaultValue: "sample-article",
+          defaultValue: "article-slug",
         },
       ],
     });

@@ -1,16 +1,34 @@
 import React from "react";
 import Link from "next/link";
 import { Box, Typography, Button } from "@mui/material";
-import Title from "../UI/common/Title";
 import pallete from "@/palette";
 import { useLocaleStore } from "@/store/useLocaleStore";
+import Title from "../UI/common/Title";
 
 interface ArticlePreviewProps {
-  title: string;
+  title: {
+    ru?: string;
+    en?: string;
+    ua?: string;
+    pl?: string;
+  };
   image: string;
-  excerpt: string;
+  excerpt: {
+    ru?: string;
+    en?: string;
+    ua?: string;
+    pl?: string;
+  };
   slug: string;
 }
+
+// Функция для получения перевода по текущей локали
+const getTranslation = (
+  translations: { ru?: string; en?: string; ua?: string; pl?: string },
+  locale: string
+): string => {
+  return translations[locale as keyof typeof translations] || translations.ru || "";
+};
 
 const ArticlePreview: React.FC<ArticlePreviewProps> = ({
   title,
@@ -20,14 +38,13 @@ const ArticlePreview: React.FC<ArticlePreviewProps> = ({
 }) => {
   const { locale } = useLocaleStore();
 
-  // Маппинг локали на перевод кнопки "Read more"
+  // Маппинг переводов для кнопки "Read more"
   const readMoreTexts: Record<string, string> = {
     ru: "Читать далее",
     en: "Read more",
     ua: "Читати далі",
     pl: "Czytaj więcej",
   };
-
   const readMoreText = readMoreTexts[locale] || readMoreTexts.en;
 
   return (
@@ -47,21 +64,21 @@ const ArticlePreview: React.FC<ArticlePreviewProps> = ({
       {/* Левая часть: Заголовок и изображение */}
       <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 1 }}>
         <Link href={`/article/${slug}`} passHref>
-          <Title text={title} />
+            <Title text= {getTranslation(title, locale)}/>
         </Link>
         <Link href={`/article/${slug}`} passHref>
-          <Box
-            component="img"
-            src={image}
-            alt={title}
-            sx={{
-              width: "100%",
-              height: "auto",
-              maxHeight: "300px",
-              objectFit: "cover",
-              borderRadius: "8px",
-            }}
-          />
+            <Box
+              component="img"
+              src={image}
+              alt={getTranslation(title, locale)}
+              sx={{
+                width: "100%",
+                height: "auto",
+                maxHeight: "300px",
+                objectFit: "cover",
+                borderRadius: "8px",
+              }}
+            />
         </Link>
       </Box>
 
@@ -75,20 +92,20 @@ const ArticlePreview: React.FC<ArticlePreviewProps> = ({
         }}
       >
         <Link href={`/article/${slug}`} passHref>
-          <Typography variant="body1" color="text.secondary">
-            {excerpt}
-          </Typography>
+            <Typography variant="body1" color="text.secondary">
+              {getTranslation(excerpt, locale)}
+            </Typography>
         </Link>
         <Link href={`/article/${slug}`} passHref>
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: pallete.common_colors.main_color,
-              alignSelf: "center",
-            }}
-          >
-            {readMoreText}
-          </Button>
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: pallete.common_colors.main_color,
+                alignSelf: "center",
+              }}
+            >
+              {readMoreText}
+            </Button>
         </Link>
       </Box>
     </Box>
