@@ -122,6 +122,7 @@ class Register {
         {
           name: "title",
           type: "object",
+          defaultValue: { ru: "Заголовок (RU)", en: "Title (EN)", ua: "Заголовок (UA)", pl: "Tytuł (PL)" },
           subFields: [
             { name: "ru", type: "string", defaultValue: "Заголовок (RU)" },
             { name: "en", type: "string", defaultValue: "Title (EN)" },
@@ -132,6 +133,7 @@ class Register {
         {
           name: "excerpt",
           type: "object",
+          defaultValue: { ru: "Описание (RU)", en: "Excerpt (EN)", ua: "Опис (UA)", pl: "Opis (PL)" },
           subFields: [
             { name: "ru", type: "string", defaultValue: "Описание (RU)" },
             { name: "en", type: "string", defaultValue: "Excerpt (EN)" },
@@ -139,18 +141,9 @@ class Register {
             { name: "pl", type: "string", defaultValue: "Opis (PL)" },
           ],
         },
-        {
-          name: "image",
-          type: "string",
-          defaultValue: "https://via.placeholder.com/600x300",
-        },
-        {
-          name: "slug",
-          type: "string",
-          defaultValue: "article-slug",
-        },
       ],
     });
+    
     // Регистрация CustomDivider(разделитель)
     Builder.registerComponent(CustomDivider, {
       name: 'Divider',
