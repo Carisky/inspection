@@ -12,6 +12,7 @@ import IconTextList from "./components/BuilderIO/IconTextList";
 import Kwiatkowska from "./components/BuilderIO/Contacts/Marketing/Kwiatkowska";
 import PeopleAccordion from "./components/BuilderIO/PeopleAccordion";
 import Krakowska from "./components/BuilderIO/Contacts/Marketing/Krakowska";
+import CustomDivider from "./components/BuilderIO/Divider";
 
 const materialIcons = [
   "Info",
@@ -150,7 +151,12 @@ class Register {
         },
       ],
     });
-
+    // Регистрация CustomDivider(разделитель)
+    Builder.registerComponent(CustomDivider, {
+      name: 'Divider',
+      canHaveChildren: false,
+      inputs: [],
+    });
     // Регистрация ArticleGrid (новый компонент)
     Builder.registerComponent(ArticleGrid, {
       name: "ArticleGrid",
