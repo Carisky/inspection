@@ -83,6 +83,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     // Обрабатываем каждого получателя по одному с задержкой 1 секунда
     for (const recipient of recipients) {
+      if (recipient.paused) {
+        console.log(`Рассылка для ${recipient.recipient_email} приостановлена.`);
+        continue; // Пропускаем данного получателя
+      }
       const recipientEmail = recipient.recipient_email;
       try {
         const personalizedHtml = baseHtml.replace(/\[\[recipient_email\]\]/g, recipientEmail);
