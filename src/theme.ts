@@ -12,8 +12,8 @@ const theme = createTheme({
       main: '#536DFE',
     },
     background: {
-      default: '#303030',
-      paper: '#424242',
+      default: '#303030', // Фон для body
+      paper: '#424242',   // Фон для компонентов Paper, Drawer и т.п.
     },
     text: {
       primary: '#FFFFFF',
@@ -22,29 +22,37 @@ const theme = createTheme({
     divider: '#BDBDBD',
   },
   components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          backgroundColor: '#303030 !important',
+          color: '#FFFFFF',
+        },
+      },
+    },
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          backgroundColor: '#424242', // фиксированный фон, чтобы не было белых полей
+          backgroundColor: '#424242 !important', // фиксированный фон для поля
           '& .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#757575', // базовый цвет рамки
+            borderColor: '#757575 !important', // базовый цвет рамки
           },
           '&:hover .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#757575', // при наведении не меняем рамку на белую
+            borderColor: '#757575 !important', // при наведении
           },
           '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#D1C4E9', // при фокусе используем светлый вариант
+            borderColor: '#D1C4E9 !important', // при фокусе
           },
-          color: '#FFFFFF', // цвет вводимого текста
+          color: '#FFFFFF !important', // цвет вводимого текста
         },
       },
     },
     MuiInputLabel: {
       styleOverrides: {
         root: {
-          color: '#757575',
+          color: '#757575 !important',
           '&.Mui-focused': {
-            color: '#D1C4E9',
+            color: '#D1C4E9 !important',
           },
         },
       },
@@ -52,10 +60,10 @@ const theme = createTheme({
     MuiSelect: {
       styleOverrides: {
         select: {
-          backgroundColor: '#424242', // устанавливаем фон для селекта
-          color: '#FFFFFF',           // текст белый
+          backgroundColor: '#424242 !important',
+          color: '#FFFFFF !important',
           '&:hover': {
-            backgroundColor: '#424242', // не меняем фон при наведении
+            backgroundColor: '#424242 !important',
           },
         },
       },
