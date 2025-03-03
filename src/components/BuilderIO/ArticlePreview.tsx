@@ -4,6 +4,7 @@ import { Box, Typography, Button } from "@mui/material";
 import pallete from "@/palette";
 import { useLocaleStore } from "@/store/useLocaleStore";
 import Title from "../UI/common/Title";
+import { motion } from "framer-motion";
 
 interface ArticlePreviewProps {
   title: {
@@ -30,6 +31,16 @@ const getTranslation = (
   return translations[locale as keyof typeof translations] || translations.ru || "";
 };
 
+const leftVariants = {
+  hidden: { opacity: 0, x: -50 },
+  visible: { opacity: 1, x: 0 },
+};
+
+const rightVariants = {
+  hidden: { opacity: 0, x: 50 },
+  visible: { opacity: 1, x: 0 },
+};
+
 const ArticlePreview: React.FC<ArticlePreviewProps> = ({
   title,
   image,
@@ -49,6 +60,11 @@ const ArticlePreview: React.FC<ArticlePreviewProps> = ({
 
   return (
     <Box
+      component={motion.div}
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
       sx={{
         display: "flex",
         flexDirection: { xs: "column", md: "row" },
@@ -62,51 +78,65 @@ const ArticlePreview: React.FC<ArticlePreviewProps> = ({
       }}
     >
       {/* Левая часть: Заголовок и изображение */}
-      <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 1 }}>
+      <Box
+        component={motion.div}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={leftVariants}
+        transition={{ duration: 0.5 }}
+        sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 1 }}
+      >
         <Link href={`/article/${slug}`} passHref>
-            <Title text= {getTranslation(title, locale)}/>
+          <Title text={getTranslation(title, locale)} />
         </Link>
         <Link href={`/article/${slug}`} passHref>
-            <Box
-              component="img"
-              src={image}
-              alt={getTranslation(title, locale)}
-              sx={{
-                width: "100%",
-                height: "auto",
-                maxHeight: "300px",
-                objectFit: "cover",
-                borderRadius: "8px",
-              }}
-            />
+          <Box
+            component="img"
+            src={image}
+            alt={getTranslation(title, locale)}
+            sx={{
+              width: "100%",
+              height: "auto",
+              maxHeight: "300px",
+              objectFit: "cover",
+              borderRadius: "8px",
+            }}
+          />
         </Link>
       </Box>
 
       {/* Правая часть: Описание и кнопка */}
       <Box
+        component={motion.div}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={rightVariants}
+        transition={{ duration: 0.5, delay: 0.2 }}
         sx={{
           flex: 1,
           display: "flex",
           flexDirection: "column",
-          marginTop: "1vh",
+          marginTop: { xs: "1vh", md: 0 },
         }}
       >
         <Link href={`/article/${slug}`} passHref>
-            <Typography variant="body1" color="text.secondary">
-              {getTranslation(excerpt, locale)}
-            </Typography>
+          <Typography variant="body1" color="text.secondary">
+            {getTranslation(excerpt, locale)}
+          </Typography>
         </Link>
         <Link href={`/article/${slug}`} passHref>
-            <Button
-              variant="contained"
-              sx={{
-                marginTop:"5vh",
-                backgroundColor: pallete.common_colors.main_color,
-                alignSelf: "center",
-              }}
-            >
-              {readMoreText}
-            </Button>
+          <Button
+            variant="contained"
+            sx={{
+              marginTop: "5vh",
+              backgroundColor: pallete.common_colors.main_color,
+              alignSelf: "center",
+            }}
+          >
+            {readMoreText}
+          </Button>
         </Link>
       </Box>
     </Box>
