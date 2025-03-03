@@ -224,7 +224,7 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
                       {page.data.children!.map((child) => (
                         <Box key={child.url} sx={{ padding: "0.5rem 1rem" }}>
                           <Link
-                            href={"/"}
+                            href={child.url!}
                             style={{
                               color: pallete.common_colors.white,
                               textDecoration: "none",
