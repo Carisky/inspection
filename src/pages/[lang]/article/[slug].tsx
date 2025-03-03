@@ -10,14 +10,10 @@ import CustomHead from "@/components/UI/common/CustomHead";
 import { useLocaleStore } from "@/store/useLocaleStore";
 import theme from "@/theme";
 import Footer from "@/components/BuilderIO/Footer";
+import Redis from "ioredis";
 
-// Инициализация Builder.io (если API ключ задан)
-const apiKey = process.env.NEXT_PUBLIC_BUILDER_API_KEY;
-if (apiKey) {
-  builder.init(apiKey);
-} else {
-  console.error("Builder.io API key is not defined!");
-}
+// Инициализация Redis-клиента (попробуйте переиспользовать клиент в серверлесс-среде)
+const redisClient = new Redis(process.env.REDIS_URL || "");
 
 interface ArticlePageProps {
   builderPage: any;
@@ -32,17 +28,14 @@ const ArticlePage: NextPage<ArticlePageProps> = ({
   domain,
   asPath,
 }) => {
-  // Получаем текущую локаль из Zustand
   const { locale } = useLocaleStore();
   const isPreviewing = useIsPreviewing();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // Если контент не найден и не в режиме предпросмотра, возвращаем 404
   if (!builderPage && !isPreviewing) {
     return <DefaultErrorPage statusCode={404} />;
   }
 
-  // Определяем SEO-поля в зависимости от локали
   let titleField = "";
   let descriptionField = "";
   switch (locale) {
@@ -67,7 +60,6 @@ const ArticlePage: NextPage<ArticlePageProps> = ({
       descriptionField = "seoDescriptionRu";
   }
 
-  // Берём SEO-данные из модели Article. Если поля отсутствуют, подставляем title из контента.
   const seoTitle =
     builderPage?.data?.[titleField] || builderPage?.data?.title || "Article";
   const seoDescription = builderPage?.data?.[descriptionField] || "";
@@ -94,8 +86,10 @@ const ArticlePage: NextPage<ArticlePageProps> = ({
             marginTop: isMobile ? "25vh" : "0",
           }}
         >
-          {/* Используем модель "article" */}
-          <BuilderComponent model="article" content={builderPage || undefined} />
+          <BuilderComponent
+            model="article"
+            content={builderPage || undefined}
+          />
         </Box>
       </Box>
       <Footer />
@@ -112,29 +106,44 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps<ArticlePageProps> = async (context) => {
   const slug = context.params?.slug as string;
+  const cacheKeyArticle = `builder:article:${slug}`;
+  const cacheKeyPages = `builder:pages`;
 
-  const builderPage = await builder
-    .get("article", {
-      userAttributes: {
-        urlPath: `/article/${slug}`,
+  // Попытка получить данные из Redis
+  let cachedArticle = await redisClient.get(cacheKeyArticle);
+  let cachedPages = await redisClient.get(cacheKeyPages);
+
+  let builderPage, pages;
+
+  if (cachedArticle && cachedPages) {
+    console.log("Cache hit");
+    builderPage = JSON.parse(cachedArticle);
+    pages = JSON.parse(cachedPages);
+  } else {
+    console.log("Cache miss, fetching from Builder.io");
+    builderPage = await builder
+      .get("article", {
+        userAttributes: { urlPath: `/article/${slug}` },
+      })
+      .toPromise();
+
+    const pagesData = await builder.getAll("page", {
+      fields: "data.url,data.title,data.children",
+      options: { noTargeting: true },
+    });
+
+    pages = pagesData.map((page: any) => ({
+      data: {
+        url: page.data?.url || "",
+        title: page.data?.title || "",
+        children: page.data?.children || [],
       },
-    })
-    .toPromise();
+    }));
 
-  // Получаем все страницы с нужными полями (url, title и children)
-  const pagesData = await builder.getAll("page", {
-    fields: "data.url,data.title,data.children",
-    options: { noTargeting: true },
-  });
-
-  // Приводим pagesData к типу Page[]
-  const pages: Page[] = pagesData.map((page: any) => ({
-    data: {
-      url: page.data?.url || "",
-      title: page.data?.title || "",
-      children: page.data?.children || [],
-    },
-  }));
+    // Кэширование результатов на 10 минут (600 секунд)
+    await redisClient.setex(cacheKeyArticle, 3600, JSON.stringify(builderPage));
+    await redisClient.setex(cacheKeyPages, 3600, JSON.stringify(pages));
+  }
 
   const domain = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   const asPath = `/article/${slug}`;
@@ -146,6 +155,6 @@ export const getStaticProps: GetStaticProps<ArticlePageProps> = async (context) 
       domain,
       asPath,
     },
-    revalidate: 5,
+    revalidate: 3600, // ISR: страница пересобирается раз в 60 секунд
   };
 };

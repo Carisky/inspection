@@ -9,14 +9,10 @@ import Footer from "@/components/BuilderIO/Footer";
 import Page from "@/interfaces/Page";
 import CustomHead from "@/components/UI/common/CustomHead";
 import { useLocaleStore } from "@/store/useLocaleStore";
+import Redis from "ioredis";
 
-// Инициализация Builder.io (если API ключ задан)
-const apiKey = process.env.NEXT_PUBLIC_BUILDER_API_KEY;
-if (apiKey) {
-  builder.init(apiKey);
-} else {
-  console.error("Builder.io API key is not defined!");
-}
+// Инициализируем Redis-клиент
+const redisClient = new Redis(process.env.REDIS_URL || "");
 
 interface PageProps {
   builderPage: BuilderContent | null;
@@ -65,7 +61,7 @@ const Index: NextPage<PageProps> = ({ builderPage, pages, domain, asPath }) => {
   const seoTitle =
     builderPage?.data?.[titleField] || builderPage?.data?.title || "Page";
   const seoDescription = builderPage?.data?.[descriptionField] || "";
-  console.log(seoTitle,seoDescription)
+
   return (
     <>
       <CustomHead
@@ -104,44 +100,55 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps<PageProps> = async (context) => {
   let segments = (context.params?.page as string[]) || [];
-  console.log("Received segments:", segments);
-
-  // Если segments равны буквально '[[...page]]', считаем, что это пустой массив (главная страница)
   if (segments.length === 1 && segments[0] === "[[...page]]") {
     segments = [];
   }
 
   const supportedLocales = ["ru", "en", "ua", "pl"];
-
-  // Если в маршруте только один сегмент и он является кодом языка, значит это главная страница
   let urlPath = "/" + segments.join("/");
   if (segments.length === 1 && supportedLocales.includes(segments[0])) {
     urlPath = "/";
   }
-  console.log("Resolved urlPath:", urlPath);
 
-  const builderPage = await builder
-    .get("page", {
-      userAttributes: { urlPath },
-    })
-    .toPromise();
+  // Ключи для кэширования в Redis
+  const cacheKeyPage = `builder:page:${urlPath}`;
+  const cacheKeyPages = `builder:pages`;
 
-  if (!builderPage) {
-    console.error(`No Builder.io content found for urlPath: "${urlPath}"`);
+  // Пытаемся получить данные из кэша
+  const cachedPage = await redisClient.get(cacheKeyPage);
+  const cachedPages = await redisClient.get(cacheKeyPages);
+
+  let builderPage, pages;
+  if (cachedPage && cachedPages) {
+    console.log("Cache hit");
+    builderPage = JSON.parse(cachedPage);
+    pages = JSON.parse(cachedPages);
+  } else {
+    console.log("Cache miss, fetching from Builder.io");
+    // Получаем контент страницы с помощью Builder.io SDK
+    builderPage = await builder
+      .get("page", {
+        userAttributes: { urlPath },
+      })
+      .toPromise();
+
+    // Получаем данные всех страниц для навигации
+    const pagesData = await builder.getAll("page", {
+      fields: "data.url,data.title,data.children",
+      options: { noTargeting: true },
+    });
+    pages = pagesData.map((page: any) => ({
+      data: {
+        url: page.data?.url || "",
+        title: page.data?.title || "",
+        children: page.data?.children || [],
+      },
+    }));
+
+    // Кэшируем результаты на 1 час (3600 секунд)
+    await redisClient.setex(cacheKeyPage, 3600, JSON.stringify(builderPage));
+    await redisClient.setex(cacheKeyPages, 3600, JSON.stringify(pages));
   }
-
-  const pagesData = await builder.getAll("page", {
-    fields: "data.url,data.title,data.children",
-    options: { noTargeting: true },
-  });
-
-  const pages: Page[] = pagesData.map((page: any) => ({
-    data: {
-      url: page.data?.url || "",
-      title: page.data?.title || "",
-      children: page.data?.children || []
-    },
-  }));
 
   const domain = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   const asPath = urlPath;
@@ -153,6 +160,6 @@ export const getStaticProps: GetStaticProps<PageProps> = async (context) => {
       domain,
       asPath,
     },
-    revalidate: 5,
+    revalidate: 3600, // ISR: страница пересобирается раз в 1 час
   };
 };
