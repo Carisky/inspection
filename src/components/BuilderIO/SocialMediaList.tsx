@@ -8,6 +8,7 @@ import {
   LinkedIn,
   YouTube,
 } from "@mui/icons-material";
+import { motion } from "framer-motion";
 
 interface SocialMediaItem {
   name: string;
@@ -66,29 +67,36 @@ const SocialMediaList: React.FC = () => {
         gap: 2,
       }}
     >
-      {socialMediaList.map((social) => (
-        <Box
+      {socialMediaList.map((social, index) => (
+        <motion.div
           key={social.name}
-          component="a"
-          href={social.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          sx={{
-            width: 50,
-            height: 50,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: "10%",
-            backgroundColor: social.color,
-            color: "#fff",
-            textDecoration: "none",
-            transition: "0.3s",
-            "&:hover": { opacity: 0.8 },
-          }}
+          initial={{ y: index % 2 === 0 ? 30 : -30, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: index * 0.1 }}
         >
-          {social.icon}
-        </Box>
+          <Box
+            component="a"
+            href={social.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{
+              width: 50,
+              height: 50,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: "10%",
+              backgroundColor: social.color,
+              color: "#fff",
+              textDecoration: "none",
+              transition: "0.3s",
+              "&:hover": { opacity: 0.8 },
+            }}
+          >
+            {social.icon}
+          </Box>
+        </motion.div>
       ))}
     </Box>
   );
