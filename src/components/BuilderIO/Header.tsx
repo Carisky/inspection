@@ -180,7 +180,7 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
             </IconButton>
           )}
 
-          <Box sx={{ flexGrow: 1, overflow: "hidden", position: "relative" }}>
+          <Box sx={{ flexGrow: 1, height:"100%", overflow: "hidden", position: "relative" }}>
             <AnimatePresence custom={direction} initial={false}>
               <motion.div
                 key={currentPage}
@@ -209,6 +209,7 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
                         position: "relative",
                         flexGrow: 1,
                         display: "flex",
+                        height:"100%",
                         justifyContent: "center",
                         alignItems: "center",
                         cursor: "pointer",
@@ -224,6 +225,9 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
                         style={{
                           color: pallete.common_colors.white,
                           textDecoration: "none",
+                          height:"100%",
+                          display:"flex",
+                          alignItems:"center"
                         }}
                       >
                         {page.data.url === "/" ? <Home /> : page.data.title}
