@@ -195,6 +195,7 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
                   justifyContent: "center",
                   alignItems: "center",
                   width: "100%",
+                  height:"100%",
                 }}
               >
                 {visiblePages.map((page) => {
