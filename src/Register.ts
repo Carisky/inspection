@@ -4,7 +4,7 @@ import Footer from "./components/BuilderIO/Footer";
 import ImagesCarousel from "./components/BuilderIO/ImagesCarousel";
 import FadeSlider from "./components/BuilderIO/FadeSlider";
 import ArticlePreview from "./components/BuilderIO/ArticlePreview";
-import {ArticleGrid} from "./components/BuilderIO/ArticleGrid";
+import { ArticleGrid } from "./components/BuilderIO/ArticleGrid";
 import MultiLangText from "./components/BuilderIO/MultiLangText"; // Импортируем MultiLangText
 import MultiLangTitle from "./components/BuilderIO/MultiLangTitle";
 import SocialMediaList from "./components/BuilderIO/SocialMediaList";
@@ -27,7 +27,7 @@ const materialIcons = [
   "Person",
   "ShoppingCart",
   "Help",
-  "Check Circle"
+  "Check Circle",
 ];
 
 class Register {
@@ -76,7 +76,7 @@ class Register {
         },
       ],
     });
-    
+
     // Регистрация FadeSlider
     Builder.registerComponent(FadeSlider, {
       name: "FadeSlider",
@@ -115,14 +115,19 @@ class Register {
       ],
     });
 
-    // Регистрация ArticlePreview
+    // Регистрация ArticlePreview с добавлением поля для изображения
     Builder.registerComponent(ArticlePreview, {
       name: "ArticlePreview",
       inputs: [
         {
           name: "title",
           type: "object",
-          defaultValue: { ru: "Заголовок (RU)", en: "Title (EN)", ua: "Заголовок (UA)", pl: "Tytuł (PL)" },
+          defaultValue: {
+            ru: "Заголовок (RU)",
+            en: "Title (EN)",
+            ua: "Заголовок (UA)",
+            pl: "Tytuł (PL)",
+          },
           subFields: [
             { name: "ru", type: "string", defaultValue: "Заголовок (RU)" },
             { name: "en", type: "string", defaultValue: "Title (EN)" },
@@ -133,7 +138,12 @@ class Register {
         {
           name: "excerpt",
           type: "object",
-          defaultValue: { ru: "Описание (RU)", en: "Excerpt (EN)", ua: "Опис (UA)", pl: "Opis (PL)" },
+          defaultValue: {
+            ru: "Описание (RU)",
+            en: "Excerpt (EN)",
+            ua: "Опис (UA)",
+            pl: "Opis (PL)",
+          },
           subFields: [
             { name: "ru", type: "string", defaultValue: "Описание (RU)" },
             { name: "en", type: "string", defaultValue: "Excerpt (EN)" },
@@ -141,12 +151,24 @@ class Register {
             { name: "pl", type: "string", defaultValue: "Opis (PL)" },
           ],
         },
+        {
+          name: "image",
+          type: "file",
+          allowedFileTypes: ["jpeg", "jpg", "png", "webp"],
+          defaultValue: "https://via.placeholder.com/300",
+          helperText: "Загрузите изображение для превью",
+        },
+        {
+          name: "slug",
+          type: "string",
+          defaultValue: "slug",
+        },
       ],
     });
-    
+
     // Регистрация CustomDivider(разделитель)
     Builder.registerComponent(CustomDivider, {
-      name: 'Divider',
+      name: "Divider",
       canHaveChildren: false,
       inputs: [],
     });
@@ -160,7 +182,8 @@ class Register {
           type: "string",
           defaultValue: "",
           friendlyName: "Фильтр по категории (slug)",
-          helperText: "Если указано, будут показаны только статьи, у которых slug категории совпадает с этим значением.",
+          helperText:
+            "Если указано, будут показаны только статьи, у которых slug категории совпадает с этим значением.",
         },
       ],
     });
@@ -176,7 +199,11 @@ class Register {
             { name: "ru", type: "string", defaultValue: "Пример текста (RU)" },
             { name: "en", type: "string", defaultValue: "Example text (EN)" },
             { name: "ua", type: "string", defaultValue: "Приклад тексту (UA)" },
-            { name: "pl", type: "string", defaultValue: "Przykładowy текст (PL)" },
+            {
+              name: "pl",
+              type: "string",
+              defaultValue: "Przykładowy текст (PL)",
+            },
           ],
         },
         {
@@ -206,7 +233,11 @@ class Register {
             { name: "ru", type: "string", defaultValue: "Пример текста (RU)" },
             { name: "en", type: "string", defaultValue: "Example text (EN)" },
             { name: "ua", type: "string", defaultValue: "Приклад тексту (UA)" },
-            { name: "pl", type: "string", defaultValue: "Przykładowy текст (PL)" },
+            {
+              name: "pl",
+              type: "string",
+              defaultValue: "Przykładowy текст (PL)",
+            },
           ],
         },
         {
@@ -262,10 +293,26 @@ class Register {
               name: "translations",
               type: "object",
               subFields: [
-                { name: "ru", type: "string", defaultValue: "Пример строки (RU)" },
-                { name: "en", type: "string", defaultValue: "Example line (EN)" },
-                { name: "ua", type: "string", defaultValue: "Приклад рядка (UA)" },
-                { name: "pl", type: "string", defaultValue: "Przykładowa linia (PL)" },
+                {
+                  name: "ru",
+                  type: "string",
+                  defaultValue: "Пример строки (RU)",
+                },
+                {
+                  name: "en",
+                  type: "string",
+                  defaultValue: "Example line (EN)",
+                },
+                {
+                  name: "ua",
+                  type: "string",
+                  defaultValue: "Приклад рядка (UA)",
+                },
+                {
+                  name: "pl",
+                  type: "string",
+                  defaultValue: "Przykładowa linia (PL)",
+                },
               ],
             },
           ],
@@ -288,7 +335,9 @@ class Register {
             "tel. +48 322 822 062",
             "w.kwiatkowska@tsl-silesia.com.pl",
           ],
-          subFields: [{ name: "text", type: "string", defaultValue: "Nowy kontakt" }],
+          subFields: [
+            { name: "text", type: "string", defaultValue: "Nowy kontakt" },
+          ],
           helperText: "Добавьте или измените контакты",
         },
       ],
@@ -308,7 +357,9 @@ class Register {
             "tel. +48 32 282 90 62 wew. 20",
             "d.zmurda@tsl-silesia.com.pl",
           ],
-          subFields: [{ name: "text", type: "string", defaultValue: "Nowy kontakt" }],
+          subFields: [
+            { name: "text", type: "string", defaultValue: "Nowy kontakt" },
+          ],
           helperText: "Добавьте или измените контакты",
         },
       ],
@@ -316,59 +367,59 @@ class Register {
 
     // Регистрация PeopleAccordion (Акордион с контактными данными)
     Builder.registerComponent(PeopleAccordion, {
-      name: 'PeopleAccordion',
+      name: "PeopleAccordion",
       inputs: [
         {
-          name: 'headerTranslations',
-          type: 'object',
+          name: "headerTranslations",
+          type: "object",
           subFields: [
-            { name: 'ru', type: 'string', defaultValue: 'Сотрудники' },
-            { name: 'en', type: 'string', defaultValue: 'Team Members' },
-            { name: 'ua', type: 'string', defaultValue: 'Співробітники' },
-            { name: 'pl', type: 'string', defaultValue: 'Pracownicy' },
+            { name: "ru", type: "string", defaultValue: "Сотрудники" },
+            { name: "en", type: "string", defaultValue: "Team Members" },
+            { name: "ua", type: "string", defaultValue: "Співробітники" },
+            { name: "pl", type: "string", defaultValue: "Pracownicy" },
           ],
-          helperText: 'Введите переводы для заголовка'
+          helperText: "Введите переводы для заголовка",
         },
         {
-          name: 'people',
-          type: 'list',
+          name: "people",
+          type: "list",
           defaultValue: [],
           subFields: [
-            { name: 'firstName', type: 'string', defaultValue: 'John' },
-            { name: 'lastName', type: 'string', defaultValue: 'Doe' },
-            { name: 'photo', type: 'file' },
+            { name: "firstName", type: "string", defaultValue: "John" },
+            { name: "lastName", type: "string", defaultValue: "Doe" },
+            { name: "photo", type: "file" },
             {
-              name: 'positionTranslations',
-              type: 'object',
+              name: "positionTranslations",
+              type: "object",
               subFields: [
-                { name: 'ru', type: 'string', defaultValue: 'Должность' },
-                { name: 'en', type: 'string', defaultValue: 'Position' },
-                { name: 'ua', type: 'string', defaultValue: 'Посада' },
-                { name: 'pl', type: 'string', defaultValue: 'Stanowisko' },
+                { name: "ru", type: "string", defaultValue: "Должность" },
+                { name: "en", type: "string", defaultValue: "Position" },
+                { name: "ua", type: "string", defaultValue: "Посада" },
+                { name: "pl", type: "string", defaultValue: "Stanowisko" },
               ],
-              helperText: 'Введите переводы для должности'
+              helperText: "Введите переводы для должности",
             },
             {
-              name: 'tl',
-              type: 'string',
-              defaultValue: '',
-              helperText: 'Введите номер телефона'
+              name: "tl",
+              type: "string",
+              defaultValue: "",
+              helperText: "Введите номер телефона",
             },
             {
-              name: 'email',
-              type: 'string',
-              defaultValue: '',
-              helperText: 'Введите email'
+              name: "email",
+              type: "string",
+              defaultValue: "",
+              helperText: "Введите email",
             },
             {
-              name: 'tlWew',
-              type: 'string',
-              defaultValue: '',
-              helperText: 'Введите значение для tl.wew'
-            }
-          ]
-        }
-      ]
+              name: "tlWew",
+              type: "string",
+              defaultValue: "",
+              helperText: "Введите значение для tl.wew",
+            },
+          ],
+        },
+      ],
     });
   };
 }

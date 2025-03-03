@@ -13,8 +13,8 @@ import InfoIcon from "@mui/icons-material/Info";
 import pallete from "@/palette";
 
 const Footer = () => {
-  const textSx ={color:pallete.common_colors.accent, fontWeight:600}
-  const iconSx ={color:pallete.common_colors.main_color}
+  const textSx = { color: pallete.common_colors.accent, fontWeight: 600 };
+  const iconSx = { color: pallete.common_colors.main_color };
   return (
     <Box component="footer" sx={{ p: 4, backgroundColor: "#f5f5f5" }}>
       <Grid container spacing={2}>
@@ -32,7 +32,7 @@ const Footer = () => {
         <Grid item xs={12} md={3}>
           <Box display="flex" alignItems="center">
             <LocationOnIcon sx={{ mr: 1, ...iconSx }} />
-            <Typography  sx={textSx} variant="body2">
+            <Typography sx={textSx} variant="body2">
               ul. Rycerska 9<br />
               41-902 Bytom Śląskie, Polska
             </Typography>
@@ -44,7 +44,8 @@ const Footer = () => {
           <Box display="flex" alignItems="center">
             <PhoneIcon sx={{ mr: 1, ...iconSx }} />
             <Typography sx={textSx} variant="body2">
-              +48 32 282 90 62<br />
+              +48 32 282 90 62
+              <br />
               +48 32 281 34 02
             </Typography>
           </Box>
@@ -55,7 +56,7 @@ const Footer = () => {
           <Box display="flex" alignItems="center">
             <EmailIcon sx={{ mr: 1, ...iconSx }} />
             <Typography sx={textSx} variant="body2">
-              office@tsl-silesia.com.pl
+              tsl-silesia.com.pl
             </Typography>
           </Box>
         </Grid>

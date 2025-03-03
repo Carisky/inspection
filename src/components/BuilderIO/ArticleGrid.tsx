@@ -13,6 +13,7 @@ import {
   Container,
 } from "@mui/material";
 import { useLocaleStore } from "@/store/useLocaleStore";
+import pallete from "@/palette";
 
 export interface ArticlePreview {
   id?: string;
@@ -172,9 +173,15 @@ export const ArticleGrid: React.FC<ArticleGridProps> = ({
                 {preview.data.image && (
                   <CardMedia
                     component="img"
-                    height="200"
+                   
                     image={preview.data.image}
                     alt={title}
+                    sx={{
+                      aspectRatio:"1/1",
+                      objectFit: "contain",
+                      height:"300",
+                      width:"300"
+                    }}
                   />
                 )}
                 <CardContent sx={{ flexGrow: 1 }}>
@@ -197,7 +204,11 @@ export const ArticleGrid: React.FC<ArticleGridProps> = ({
                 {(preview.data.slug || preview.data.url) && (
                   <CardActions>
                     <Button
+                    variant={"contained"}
                       size="small"
+                      sx={{
+                        backgroundColor:pallete.common_colors.main_color
+                      }}
                       href={preview.data.url || `/article/${preview.data.slug}`}
                     >
                       {readMoreText}

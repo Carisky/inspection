@@ -18,12 +18,15 @@ import pallete from "@/palette";
 import Page from "@/interfaces/Page";
 import { useInitLocale } from "@/store/useLocaleStore";
 import LanguageSwitcher from "../UI/common/LanguageSwitcher";
-
+import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
+import InfoIcon from "@mui/icons-material/Info";
 interface HeaderProps {
   pages: Page[];
 }
 
 const DesktopHeader = ({ pages }: HeaderProps) => {
+  const textSx = { color: pallete.common_colors.accent };
+  const iconSx = { color: pallete.common_colors.main_color };
   // Храним URL папки, над которой сейчас наведен курсор
   const [activeFolder, setActiveFolder] = useState<string | null>(null);
 
@@ -70,7 +73,7 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
           <Box
             sx={{
               display: "grid",
-              gridTemplateColumns: "repeat(2, 1fr)",
+              gridTemplateColumns: "repeat(3, 1fr)",
               gridTemplateRows: "repeat(2, auto)",
               gap: 2,
               flexGrow: 1,
@@ -111,9 +114,40 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
                   color: pallete.common_colors.main_color,
                 }}
               />
-              office@tsl-group.pl
+              tsl-silesia.com.pl
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                color: pallete.common_colors.accent,
+                alignItems: "center",
+              }}
+            >
+              ISO : Pl014435/U
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                color: pallete.common_colors.accent,
+                alignItems: "center",
+              }}
+            >
+              AEO : PLAEOF330000100009
+            </Box>
+            <Box display="flex" alignItems="center">
+              <AssignmentIndIcon sx={{ mr: 1, ...iconSx }} />
+              <Typography sx={textSx} variant="body2">
+                NIP: PL6262721695
+              </Typography>
+            </Box>
+            <Box display="flex" alignItems="center">
+              <InfoIcon sx={{ mr: 1, ...iconSx }} />
+              <Typography sx={textSx} variant="body2">
+                Regon: 278125418
+              </Typography>
             </Box>
           </Box>
+
           <LanguageSwitcher direction="column" />
         </Box>
       </Box>

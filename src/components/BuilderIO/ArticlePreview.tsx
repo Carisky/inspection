@@ -100,6 +100,7 @@ const ArticlePreview: React.FC<ArticlePreviewProps> = ({
             <Button
               variant="contained"
               sx={{
+                marginTop:"5vh",
                 backgroundColor: pallete.common_colors.main_color,
                 alignSelf: "center",
               }}
