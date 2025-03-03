@@ -5,14 +5,14 @@ import {
   IconButton,
   List,
   ListItemButton,
-  useTheme,
-  useMediaQuery,
   Typography,
   Divider,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import Image from "next/image";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Call, Mail, Map, Home } from "@mui/icons-material";
+import { Call, Mail, Map, Home, ChevronLeft, ChevronRight } from "@mui/icons-material";
 import Link from "next/link";
 import pallete from "@/palette";
 import Page from "@/interfaces/Page";
@@ -20,15 +20,54 @@ import { useInitLocale } from "@/store/useLocaleStore";
 import LanguageSwitcher from "../UI/common/LanguageSwitcher";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import InfoIcon from "@mui/icons-material/Info";
+import { motion, AnimatePresence } from "framer-motion";
+
 interface HeaderProps {
   pages: Page[];
 }
 
+const itemsPerPage = 10;
+
 const DesktopHeader = ({ pages }: HeaderProps) => {
-  const textSx = { color: pallete.common_colors.accent };
-  const iconSx = { color: pallete.common_colors.main_color };
-  // Храним URL папки, над которой сейчас наведен курсор
   const [activeFolder, setActiveFolder] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [direction, setDirection] = useState<"next" | "prev">("next");
+
+  const totalPages = Math.ceil(pages.length / itemsPerPage);
+  const visiblePages = pages.slice(
+    currentPage * itemsPerPage,
+    currentPage * itemsPerPage + itemsPerPage
+  );
+
+  const handlePrevPage = () => {
+    if (currentPage > 0) {
+      setDirection("prev");
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages - 1) {
+      setDirection("next");
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  // Обновлённые варианты анимации с процентными значениями
+  const variants = {
+    enter: (direction: "next" | "prev") => ({
+      x: direction === "next" ? "100%" : "-100%",
+      opacity: 0,
+    }),
+    center: {
+      x: "0%",
+      opacity: 1,
+    },
+    exit: (direction: "next" | "prev") => ({
+      x: direction === "next" ? "-100%" : "100%",
+      opacity: 0,
+    }),
+  };
 
   return (
     <Box>
@@ -52,13 +91,7 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
           paddingBottom: "2%",
         }}
       >
-        <Box
-          sx={{
-            width: "80vw",
-            height: "100%",
-            display: "flex",
-          }}
-        >
+        <Box sx={{ width: "80vw", display: "flex" }}>
           <Box>
             <Link href={"/"}>
               <Image
@@ -81,73 +114,40 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Map
-                sx={{
-                  marginRight: "10px",
-                  color: pallete.common_colors.main_color,
-                }}
-              />
+              <Map sx={{ marginRight: "10px", color: pallete.common_colors.main_color }} />
               ul. Rycerska 9, 41-902 Bytom
             </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Call
-                sx={{
-                  marginRight: "10px",
-                  color: pallete.common_colors.main_color,
-                }}
-              />
+              <Call sx={{ marginRight: "10px", color: pallete.common_colors.main_color }} />
               +48 (32) 282 90 62
             </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Call
-                sx={{
-                  marginRight: "10px",
-                  color: pallete.common_colors.main_color,
-                }}
-              />
+              <Call sx={{ marginRight: "10px", color: pallete.common_colors.main_color }} />
               +48 (32) 281 34 02
             </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Mail
-                sx={{
-                  marginRight: "10px",
-                  color: pallete.common_colors.main_color,
-                }}
-              />
+              <Mail sx={{ marginRight: "10px", color: pallete.common_colors.main_color }} />
               tsl-silesia.com.pl
             </Box>
-            <Box
-              sx={{
-                display: "flex",
-                color: pallete.common_colors.accent,
-                alignItems: "center",
-              }}
-            >
+            <Box sx={{ display: "flex", color: pallete.common_colors.accent, alignItems: "center" }}>
               ISO : Pl014435/U
             </Box>
-            <Box
-              sx={{
-                display: "flex",
-                color: pallete.common_colors.accent,
-                alignItems: "center",
-              }}
-            >
+            <Box sx={{ display: "flex", color: pallete.common_colors.accent, alignItems: "center" }}>
               AEO : PLAEOF330000100009
             </Box>
             <Box display="flex" alignItems="center">
-              <AssignmentIndIcon sx={{ mr: 1, ...iconSx }} />
-              <Typography sx={textSx} variant="body2">
+              <AssignmentIndIcon sx={{ mr: 1, color: pallete.common_colors.main_color }} />
+              <Typography sx={{ color: pallete.common_colors.accent }} variant="body2">
                 NIP: PL6262721695
               </Typography>
             </Box>
             <Box display="flex" alignItems="center">
-              <InfoIcon sx={{ mr: 1, ...iconSx }} />
-              <Typography sx={textSx} variant="body2">
+              <InfoIcon sx={{ mr: 1, color: pallete.common_colors.main_color }} />
+              <Typography sx={{ color: pallete.common_colors.accent }} variant="body2">
                 Regon: 278125418
               </Typography>
             </Box>
           </Box>
-
           <LanguageSwitcher direction="column" />
         </Box>
       </Box>
@@ -164,6 +164,7 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
           sx={{
             position: "absolute",
             display: "flex",
+            alignItems: "center",
             backgroundColor: pallete.elements.nav,
             height: "10vh",
             width: "80vw",
@@ -173,74 +174,98 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
             zIndex: 10,
           }}
         >
-          {pages && pages.length > 0 ? (
-            pages.map((page) => {
-              const hasChildren =
-                page.data.children && page.data.children.length > 0;
-              return (
-                <Box
-                  key={page.data.url}
-                  onMouseEnter={() => {
-                    if (hasChildren) setActiveFolder(page.data.url);
-                  }}
-                  onMouseLeave={() => {
-                    if (hasChildren) setActiveFolder(null);
-                  }}
-                  sx={{
-                    position: "relative",
-                    flexGrow: 1,
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    cursor: "pointer",
-                    color: pallete.common_colors.white,
-                    ":hover": {
-                      backgroundColor: pallete.elements.nav_element_hover,
-                      transition: "ease-in",
-                    },
-                  }}
-                >
-                  <Link
-                    href={page.data.url}
-                    style={{
-                      color: pallete.common_colors.white,
-                      textDecoration: "none",
-                    }}
-                  >
-                    {page.data.url === "/" ? <Home /> : page.data.title}
-                  </Link>
-                  {hasChildren && activeFolder === page.data.url && (
+          {currentPage > 0 && (
+            <IconButton onClick={handlePrevPage}>
+              <ChevronLeft sx={{ color: pallete.common_colors.white }} />
+            </IconButton>
+          )}
+
+          <Box sx={{ flexGrow: 1, overflow: "hidden", position: "relative" }}>
+            <AnimatePresence custom={direction} initial={false}>
+              <motion.div
+                key={currentPage}
+                custom={direction}
+                variants={variants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.75 }}
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: "100%",
+                }}
+              >
+                {visiblePages.map((page) => {
+                  const hasChildren =
+                    page.data.children && page.data.children.length > 0;
+                  return (
                     <Box
+                      key={page.data.url}
+                      onMouseEnter={() => hasChildren && setActiveFolder(page.data.url)}
+                      onMouseLeave={() => hasChildren && setActiveFolder(null)}
                       sx={{
-                        position: "absolute",
-                        top: "100%",
-                        left: 0,
-                        backgroundColor: pallete.elements.nav,
-                        padding: "0.5rem",
-                        boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
-                        zIndex: 20,
+                        position: "relative",
+                        flexGrow: 1,
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        cursor: "pointer",
+                        color: pallete.common_colors.white,
+                        ":hover": {
+                          backgroundColor: pallete.elements.nav_element_hover,
+                          transition: "ease-in",
+                        },
                       }}
                     >
-                      {page.data.children!.map((child) => (
-                        <Box key={child.url} sx={{ padding: "0.5rem 1rem" }}>
-                          <Link
-                            href={child.url!}
-                            style={{
-                              color: pallete.common_colors.white,
-                              textDecoration: "none",
-                            }}
-                          >
-                            <Typography>{child.title}</Typography>
-                          </Link>
+                      <Link
+                        href={page.data.url}
+                        style={{
+                          color: pallete.common_colors.white,
+                          textDecoration: "none",
+                        }}
+                      >
+                        {page.data.url === "/" ? <Home /> : page.data.title}
+                      </Link>
+                      {hasChildren && activeFolder === page.data.url && (
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            top: "100%",
+                            left: 0,
+                            backgroundColor: pallete.elements.nav,
+                            padding: "0.5rem",
+                            boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
+                            zIndex: 20,
+                          }}
+                        >
+                          {page.data.children!.map((child) => (
+                            <Box key={child.url} sx={{ padding: "0.5rem 1rem" }}>
+                              <Link
+                                href={child.url!}
+                                style={{
+                                  color: pallete.common_colors.white,
+                                  textDecoration: "none",
+                                }}
+                              >
+                                <Typography>{child.title}</Typography>
+                              </Link>
+                            </Box>
+                          ))}
                         </Box>
-                      ))}
+                      )}
                     </Box>
-                  )}
-                </Box>
-              );
-            })
-          ) : (
-            <Box>Меню не доступно</Box>
+                  );
+                })}
+              </motion.div>
+            </AnimatePresence>
+          </Box>
+
+          {currentPage < totalPages - 1 && (
+            <IconButton onClick={handleNextPage}>
+              <ChevronRight sx={{ color: pallete.common_colors.white }} />
+            </IconButton>
           )}
         </Box>
       </Box>
@@ -250,10 +275,7 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
 
 const MobileHeader = ({ pages }: HeaderProps) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  // Храним развёрнутое состояние для папок (ключ – URL родительской страницы)
-  const [expandedFolders, setExpandedFolders] = useState<{
-    [key: string]: boolean;
-  }>({});
+  const [expandedFolders, setExpandedFolders] = useState<{ [key: string]: boolean }>({});
 
   const toggleDrawer = (open: boolean) => () => {
     setDrawerOpen(open);
@@ -291,10 +313,7 @@ const MobileHeader = ({ pages }: HeaderProps) => {
             priority
           />
         </Box>
-        <IconButton
-          onClick={toggleDrawer(true)}
-          sx={{ color: pallete.common_colors.white }}
-        >
+        <IconButton onClick={toggleDrawer(true)} sx={{ color: pallete.common_colors.white }}>
           <MenuIcon
             sx={{
               color: pallete.common_colors.main_color,
@@ -320,13 +339,10 @@ const MobileHeader = ({ pages }: HeaderProps) => {
         >
           <List>
             {pages.map((page) => {
-              const hasChildren =
-                page.data.children && page.data.children.length > 0;
+              const hasChildren = page.data.children && page.data.children.length > 0;
               return (
                 <React.Fragment key={page.data.url}>
-                  <ListItemButton
-                    onClick={() => hasChildren && toggleFolder(page.data.url)}
-                  >
+                  <ListItemButton onClick={() => hasChildren && toggleFolder(page.data.url)}>
                     <Link href={page.data.url}>
                       <Typography
                         sx={{
@@ -344,7 +360,7 @@ const MobileHeader = ({ pages }: HeaderProps) => {
                     <Box sx={{ pl: 4 }}>
                       {page.data.children!.map((child) => (
                         <ListItemButton key={child.url}>
-                          <Link href={"/"}>
+                          <Link href={child.url!}>
                             <Typography
                               sx={{
                                 color: pallete.common_colors.main_color,
@@ -364,10 +380,7 @@ const MobileHeader = ({ pages }: HeaderProps) => {
               );
             })}
           </List>
-          {/* Переключатель языков */}
-          <Box
-            sx={{ padding: "1rem", display: "flex", justifyContent: "center" }}
-          >
+          <Box sx={{ padding: "1rem", display: "flex", justifyContent: "center" }}>
             <LanguageSwitcher direction="row" />
           </Box>
         </Box>
@@ -377,7 +390,6 @@ const MobileHeader = ({ pages }: HeaderProps) => {
 };
 
 const Header = ({ pages }: HeaderProps) => {
-  console.log(pages);
   useInitLocale();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
