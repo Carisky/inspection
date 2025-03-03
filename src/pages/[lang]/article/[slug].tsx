@@ -110,8 +110,8 @@ export const getStaticProps: GetStaticProps<ArticlePageProps> = async (context) 
   const cacheKeyPages = `builder:pages`;
 
   // Попытка получить данные из Redis
-  let cachedArticle = await redisClient.get(cacheKeyArticle);
-  let cachedPages = await redisClient.get(cacheKeyPages);
+  const cachedArticle = await redisClient.get(cacheKeyArticle);
+  const cachedPages = await redisClient.get(cacheKeyPages);
 
   let builderPage, pages;
 
