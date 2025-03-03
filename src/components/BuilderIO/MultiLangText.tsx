@@ -1,6 +1,7 @@
 import React from "react";
 import { useLocaleStore } from "@/store/useLocaleStore";
 import { Typography } from "@mui/material";
+import { motion } from "framer-motion";
 
 interface MultiLangTextProps {
   translations?: {
@@ -15,8 +16,8 @@ interface MultiLangTextProps {
 
 const MultiLangText: React.FC<MultiLangTextProps> = ({
   translations = {},
-  textAlign = "left", // По умолчанию текст слева
-  fontSize = 20, // По умолчанию 16px
+  textAlign = "left",
+  fontSize = 20,
 }) => {
   const { locale } = useLocaleStore();
 
@@ -33,16 +34,30 @@ const MultiLangText: React.FC<MultiLangTextProps> = ({
     mergedTranslations[locale as keyof typeof mergedTranslations] ||
     mergedTranslations.ru;
 
+  // Варианты анимации: изначально текст смещён вниз и невидим, затем появляется
+  const variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
-    <Typography
-      variant="body1"
-      sx={{
-        textAlign,
-        fontSize: `${fontSize}px`,
-      }}
+    <motion.div
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+      transition={{ duration: 0.75, ease: "easeOut" }}
+      variants={variants}
     >
-      {text}
-    </Typography>
+      <Typography
+        variant="body1"
+        sx={{
+          textAlign,
+          fontSize: `${fontSize}px`,
+        }}
+      >
+        {text}
+      </Typography>
+    </motion.div>
   );
 };
 
