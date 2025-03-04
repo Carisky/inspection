@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { useLocaleStore } from "@/store/useLocaleStore";
 import pallete from "@/palette";
+import Link from "next/link";
 
 export interface ArticlePreview {
   id?: string;
@@ -171,6 +172,7 @@ export const ArticleGrid: React.FC<ArticleGridProps> = ({
                 }}
               >
                 {preview.data.image && (
+                  <Link href={preview.data.url || `/article/${preview.data.slug}`}>
                   <CardMedia
                     component="img"
                    
@@ -183,6 +185,7 @@ export const ArticleGrid: React.FC<ArticleGridProps> = ({
                       width:"300"
                     }}
                   />
+                  </Link>
                 )}
                 <CardContent sx={{ flexGrow: 1 }}>
                   <Typography gutterBottom variant="h6" component="div">
@@ -193,6 +196,8 @@ export const ArticleGrid: React.FC<ArticleGridProps> = ({
                       <strong>Категория:</strong> {categoryName}
                     </Typography>
                   )}
+                  <Link href={preview.data.url || `/article/${preview.data.slug}`}>
+
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -200,6 +205,7 @@ export const ArticleGrid: React.FC<ArticleGridProps> = ({
                   >
                     {description}
                   </Typography>
+                  </Link>
                 </CardContent>
                 {(preview.data.slug || preview.data.url) && (
                   <CardActions>
