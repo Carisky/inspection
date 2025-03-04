@@ -10,7 +10,7 @@ interface KwiatkowskaProps {
 const Kwiatkowska: React.FC<KwiatkowskaProps> = ({
   contacts = [
     "Wiktoria Kwiatkowska",
-    "Kierownik Działu Marketingu",
+    "Kierownik firmy rzeczoznawczo-kontrolnej",
     "kom. +48 608 675 834",
     "tel. +48 322 822 062",
     "w.kwiatkowska@tsl-silesia.com.pl",
