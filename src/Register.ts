@@ -77,7 +77,6 @@ class Register {
       ],
     });
 
-    // Регистрация FadeSlider
     Builder.registerComponent(FadeSlider, {
       name: "FadeSlider",
       inputs: [
@@ -107,13 +106,51 @@ class Register {
           helperText: "Высота слайдера (например: 300px, auto)",
         },
         {
+          name: "translationRu",
+          type: "string",
+          defaultValue: "Пример текста (RU)",
+          helperText: "Текст на русском",
+        },
+        {
+          name: "translationEn",
+          type: "string",
+          defaultValue: "Example text (EN)",
+          helperText: "Текст на английском",
+        },
+        {
+          name: "translationUa",
+          type: "string",
+          defaultValue: "Приклад тексту (UA)",
+          helperText: "Текст на украинском",
+        },
+        {
+          name: "translationPl",
+          type: "string",
+          defaultValue: "Przykładowy текст (PL)",
+          helperText: "Текст на польском",
+        },
+        {
           name: "textColor",
           type: "color",
           defaultValue: "#ffffff",
           helperText: "Цвет текста",
         },
+        {
+          name: "textAlign",
+          type: "string",
+          defaultValue: "center",
+          helperText: "Выравнивание текста (left, center, right)",
+        },
+        {
+          name: "fontSize",
+          type: "number",
+          defaultValue: 20,
+          helperText: "Размер шрифта",
+        },
       ],
     });
+    
+    
 
     // Регистрация ArticlePreview с добавлением поля для изображения
     Builder.registerComponent(ArticlePreview, {
