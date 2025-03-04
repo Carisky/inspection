@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import Carousel from "react-multi-carousel";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
 import "react-multi-carousel/lib/styles.css";
 
 const responsive = {
@@ -24,38 +26,75 @@ const ImagesCarousel = ({
   images = [],
   imageWidth = "75%",
   imageHeight = "auto",
-  aspectRatio = ""
+  aspectRatio = "",
 }: {
   images: { url: string }[];
   imageWidth?: string;
   imageHeight?: string;
   aspectRatio?: string;
 }) => {
+  const [open, setOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState("");
+
+  const handleImageClick = (url: string) => {
+    setSelectedImage(url);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedImage("");
+  };
+
   return (
-    <Carousel
-      responsive={responsive}
-      autoPlay
-      infinite
-      keyBoardControl
-      containerClass="carousel-container"
-      removeArrowOnDeviceType={["mobile"]}
-    >
-      {images.map((img, index) => (
-        <div key={index} style={{ padding: "10px", textAlign: "center" }}>
+    <>
+      <Carousel
+        responsive={responsive}
+        autoPlay
+        infinite
+        keyBoardControl
+        containerClass="carousel-container"
+        removeArrowOnDeviceType={["mobile"]}
+      >
+        {images.map((img, index) => (
+          <div key={index} style={{ padding: "10px", textAlign: "center" }}>
+            <img
+              src={img.url}
+              alt={`Slide ${index + 1}`}
+              style={{
+                width: imageWidth,
+                height: imageHeight,
+                borderRadius: "10px",
+                objectFit: "cover",
+                aspectRatio: aspectRatio,
+                cursor: "pointer",
+              }}
+              onClick={() => handleImageClick(img.url)}
+            />
+          </div>
+        ))}
+      </Carousel>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        maxWidth="lg"
+        PaperProps={{ style: { overflow: "hidden" } }}
+      >
+        <DialogContent style={{ padding: 0, overflow: "hidden" }}>
           <img
-            src={img.url}
-            alt={`Slide ${index + 1}`}
+            src={selectedImage}
+            alt="Увеличенное изображение"
             style={{
-              width: imageWidth,
-              height: imageHeight,
-              borderRadius: "10px",
+              width: "100%",
+              maxHeight: "90vh",
               objectFit: "cover",
-              aspectRatio: aspectRatio,
+              display: "block",
+              // удалено height: "100%", чтобы не превышать размеры контейнера
             }}
           />
-        </div>
-      ))}
-    </Carousel>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
