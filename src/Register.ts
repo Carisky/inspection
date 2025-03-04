@@ -13,6 +13,8 @@ import Kwiatkowska from "./components/BuilderIO/Contacts/Marketing/Kwiatkowska";
 import PeopleAccordion from "./components/BuilderIO/PeopleAccordion";
 import Krakowska from "./components/BuilderIO/Contacts/Marketing/Krakowska";
 import CustomDivider from "./components/BuilderIO/Divider";
+import Danch from "./components/BuilderIO/Contacts/Marketing/Danch";
+import Dziurdzia from "./components/BuilderIO/Contacts/Marketing/Dziurdzia";
 
 const materialIcons = [
   "Info",
@@ -149,8 +151,6 @@ class Register {
         },
       ],
     });
-    
-    
 
     // Регистрация ArticlePreview с добавлением поля для изображения
     Builder.registerComponent(ArticlePreview, {
@@ -379,7 +379,7 @@ class Register {
         },
       ],
     });
-
+    // Регистрация Kwiatkowska (Список Контактов Krakowska)
     Builder.registerComponent(Krakowska, {
       name: "Krakowska",
       description: "Список контактов Daria Krakowska",
@@ -393,6 +393,50 @@ class Register {
             "kom. +48 664 787 417",
             "tel. +48 32 282 90 62 wew. 20",
             "d.zmurda@tsl-silesia.com.pl",
+          ],
+          subFields: [
+            { name: "text", type: "string", defaultValue: "Nowy kontakt" },
+          ],
+          helperText: "Добавьте или измените контакты",
+        },
+      ],
+    });
+    // Регистрация Kwiatkowska (Список Контактов Danch)
+    Builder.registerComponent(Danch, {
+      name: "Danch",
+      description: "Список контактов Danch",
+      inputs: [
+        {
+          name: "contacts",
+          type: "list",
+          defaultValue: [
+            "Mirosława Danch",
+            "Zastępca kierownika firmy rzeczoznawczo-kontrolnej",
+            "kom. +48 32 282 90 62",
+            "tel. +48 32 282 90 62",
+            "m.danch@tsl-silesia.com.pl",
+          ],
+          subFields: [
+            { name: "text", type: "string", defaultValue: "Nowy kontakt" },
+          ],
+          helperText: "Добавьте или измените контакты",
+        },
+      ],
+    });
+    // Регистрация Kwiatkowska (Список Контактов Danch)
+    Builder.registerComponent(Dziurdzia, {
+      name: "Dziurdzia",
+      description: "Список контактов Dziurdzia",
+      inputs: [
+        {
+          name: "contacts",
+          type: "list",
+          defaultValue: [
+            "Paweł Dziurdzia",
+            "Asystent firmy rzeczoznawczo-kontrolnej",
+            "kom. +48 32 282 90 62",
+            "tel. +48 516 284 653",
+            "p.dziurdzia@tsl-silesia.com.pl",
           ],
           subFields: [
             { name: "text", type: "string", defaultValue: "Nowy kontakt" },
