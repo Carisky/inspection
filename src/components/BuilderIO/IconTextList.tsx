@@ -39,7 +39,7 @@ const IconTextList: React.FC<IconTextListProps> = ({ items = [] }) => {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
           >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1 }}>
               <IconComponent sx={{ fontSize: 24, color: pallete.common_colors.main_color }} />
               <Typography sx={{ fontSize: "20px" }} variant="body1">
                 {text}

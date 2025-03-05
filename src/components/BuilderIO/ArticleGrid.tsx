@@ -81,11 +81,13 @@ export const ArticleGrid: React.FC<ArticleGridProps> = ({
 
   useEffect(() => {
     async function fetchPreviews() {
+      console.log("Запрос превью...");
       try {
         const results = (await builder.getAll("article-preview", {
           limit: 100,
           includeRefs: true,
         })) as ArticlePreview[];
+        console.log("Полученные данные:", results);
         setPreviews(results);
       } catch (error) {
         console.error("Ошибка при получении превью статей:", error);

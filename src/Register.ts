@@ -200,6 +200,11 @@ class Register {
           type: "string",
           defaultValue: "slug",
         },
+        {
+          name: "link",
+          type: "string",
+          defaultValue: "link",
+        },
       ],
     });
 

@@ -10,10 +10,6 @@ import CustomHead from "@/components/UI/common/CustomHead";
 import { useLocaleStore } from "@/store/useLocaleStore";
 import theme from "@/theme";
 import Footer from "@/components/BuilderIO/Footer";
-import Redis from "ioredis";
-
-// Инициализация Redis-клиента (попробуйте переиспользовать клиент в серверлесс-среде)
-const redisClient = new Redis(process.env.REDIS_URL || "");
 
 interface ArticlePageProps {
   builderPage: any;
@@ -106,44 +102,27 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps<ArticlePageProps> = async (context) => {
   const slug = context.params?.slug as string;
-  const cacheKeyArticle = `builder:article:${slug}`;
-  const cacheKeyPages = `builder:pages`;
 
-  // Попытка получить данные из Redis
-  const cachedArticle = await redisClient.get(cacheKeyArticle);
-  const cachedPages = await redisClient.get(cacheKeyPages);
+  // Получаем данные статьи напрямую из Builder.io
+  const builderPage = await builder
+    .get("article", {
+      userAttributes: { urlPath: `/article/${slug}` },
+    })
+    .toPromise();
 
-  let builderPage, pages;
+  // Получаем данные всех страниц для навигации
+  const pagesData = await builder.getAll("page", {
+    fields: "data.url,data.title,data.children",
+    options: { noTargeting: true },
+  });
 
-  if (cachedArticle && cachedPages) {
-    console.log("Cache hit");
-    builderPage = JSON.parse(cachedArticle);
-    pages = JSON.parse(cachedPages);
-  } else {
-    console.log("Cache miss, fetching from Builder.io");
-    builderPage = await builder
-      .get("article", {
-        userAttributes: { urlPath: `/article/${slug}` },
-      })
-      .toPromise();
-
-    const pagesData = await builder.getAll("page", {
-      fields: "data.url,data.title,data.children",
-      options: { noTargeting: true },
-    });
-
-    pages = pagesData.map((page: any) => ({
-      data: {
-        url: page.data?.url || "",
-        title: page.data?.title || "",
-        children: page.data?.children || [],
-      },
-    }));
-
-    // Кэширование результатов на 10 минут (600 секунд)
-    await redisClient.setex(cacheKeyArticle, 3600, JSON.stringify(builderPage));
-    await redisClient.setex(cacheKeyPages, 3600, JSON.stringify(pages));
-  }
+  const pages = pagesData.map((page: any) => ({
+    data: {
+      url: page.data?.url || "",
+      title: page.data?.title || "",
+      children: page.data?.children || [],
+    },
+  }));
 
   const domain = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   const asPath = `/article/${slug}`;
@@ -155,6 +134,6 @@ export const getStaticProps: GetStaticProps<ArticlePageProps> = async (context) 
       domain,
       asPath,
     },
-    revalidate: 3600, // ISR: страница пересобирается раз в 60 секунд
+    revalidate: 3600, // ISR: страница пересобирается раз в 1 час
   };
 };

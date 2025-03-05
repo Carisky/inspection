@@ -3,10 +3,9 @@ import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import Grid from "@mui/material/Grid";
 import BusinessIcon from "@mui/icons-material/Business";
 import Typography from "@mui/material/Typography";
-import { useTheme, useMediaQuery, Box } from "@mui/material";
+import { useTheme, useMediaQuery, Box, List, ListItem } from "@mui/material";
 import { useLocaleStore } from "@/store/useLocaleStore";
 import pallete from "@/palette";
 
@@ -26,7 +25,6 @@ export interface Person {
 }
 
 export interface PeopleAccordionProps {
-  // Пропсы теперь опциональны – если их не передать, будут использоваться значения по умолчанию
   headerTranslations?: {
     ru?: string;
     en?: string;
@@ -36,15 +34,11 @@ export interface PeopleAccordionProps {
   people?: Person[];
 }
 
-const PeopleAccordion: React.FC<PeopleAccordionProps> = ({
-  headerTranslations,
-  people,
-}) => {
+const PeopleAccordion: React.FC<PeopleAccordionProps> = ({ headerTranslations, people }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { locale } = useLocaleStore();
 
-  // Значения по умолчанию для заголовка
   const defaultHeaderTranslations = {
     ru: "Сотрудники",
     en: "Team Members",
@@ -57,11 +51,8 @@ const PeopleAccordion: React.FC<PeopleAccordionProps> = ({
     ...headerTranslations,
   };
 
-  const headerText =
-    mergedHeaderTranslations[locale as keyof typeof mergedHeaderTranslations] ||
-    mergedHeaderTranslations.ru;
+  const headerText = mergedHeaderTranslations[locale as keyof typeof mergedHeaderTranslations] || mergedHeaderTranslations.ru;
 
-  // Значения по умолчанию для должности
   const defaultPositionTranslations = {
     ru: "Должность",
     en: "Position",
@@ -69,7 +60,6 @@ const PeopleAccordion: React.FC<PeopleAccordionProps> = ({
     pl: "Stanowisko",
   };
 
-  // Пример дефолтных данных для сотрудников
   const defaultPeople: Person[] = [
     {
       firstName: "John",
@@ -85,97 +75,49 @@ const PeopleAccordion: React.FC<PeopleAccordionProps> = ({
       email: "john.doe@example.com",
       tlWew: "Дополнительная информация",
     },
-    // Можно добавить дополнительные записи...
   ];
 
   const peopleData = people && people.length ? people : defaultPeople;
 
   return (
-    <Accordion
-      sx={{
-        width: "90%",
-        margin: "auto",
-      }}
-    >
+    <Accordion sx={{ width: "90%", margin: "auto" }}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <BusinessIcon
-            sx={{
-              color: pallete.common_colors.main_color,
-              marginRight: "10px",
-            }}
-          />
-          <Typography
-            sx={{ fontSize: "30px", color: pallete.common_colors.main_color }}
-            variant="h2"
-            component="h2"
-            align="center"
-          >
+          <BusinessIcon sx={{ color: pallete.common_colors.main_color, marginRight: "10px" }} />
+          <Typography sx={{ fontSize: "30px", color: pallete.common_colors.main_color }} variant="h2" component="h2" align="center">
             {headerText}
           </Typography>
         </Box>
       </AccordionSummary>
       <AccordionDetails>
-        <Grid container spacing={2}>
+        <List>
           {peopleData.map((person, index) => {
             const mergedPositionTranslations = {
               ...defaultPositionTranslations,
               ...person.positionTranslations,
             };
-            const positionText =
-              mergedPositionTranslations[
-                locale as keyof typeof mergedPositionTranslations
-              ] || mergedPositionTranslations.ru;
+            const positionText = mergedPositionTranslations[locale as keyof typeof mergedPositionTranslations] || mergedPositionTranslations.ru;
 
             return (
-              <Grid key={index} item xs={12} sm={6}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    flexDirection: isMobile ? "column" : "row",
-                    textAlign: isMobile ? "center" : "left",
-                    gap: "20px",
-                  }}
-                >
-                  <img
-                    src={person.photo}
-                    alt={`${person.firstName} ${person.lastName}`}
-                    width={300}
-                    height={200}
-                    style={{
-                      objectFit: "cover", // масштабирует изображение с обрезкой лишнего
-                      objectPosition: "center", // центрирует изображение
-                      borderRadius: "5%",
-                      marginRight: 8,
-                    }}
-                  />
-
-                  <div>
-                    <Typography variant="h6">
-                      {person.firstName} {person.lastName}
-                    </Typography>
-                    <Typography variant="body2">{positionText}</Typography>
-                    {/* Дополнительные контактные данные */}
-                    {person.tl && (
-                      <Typography variant="body2">Kom: {person.tl}</Typography>
-                    )}
-                    {person.email && (
-                      <Typography variant="body2">
-                        Email: {person.email}
-                      </Typography>
-                    )}
-                    {person.tlWew && (
-                      <Typography variant="body2">
-                        tl.wew: {person.tlWew}
-                      </Typography>
-                    )}
-                  </div>
-                </div>
-              </Grid>
+              <ListItem key={index} sx={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: "center", gap: "20px" }}>
+                <img
+                  src={person.photo}
+                  alt={`${person.firstName} ${person.lastName}`}
+                  width={150}
+                  height={150}
+                  style={{ objectFit: "cover", objectPosition: "center", borderRadius: "10%" }}
+                />
+                <Box>
+                  <Typography variant="h6">{person.firstName} {person.lastName}</Typography>
+                  <Typography variant="body2">{positionText}</Typography>
+                  {person.tl && <Typography variant="body2">Kom: {person.tl}</Typography>}
+                  {person.email && <Typography variant="body2">Email: {person.email}</Typography>}
+                  {person.tlWew && <Typography variant="body2">tl.wew: {person.tlWew}</Typography>}
+                </Box>
+              </ListItem>
             );
           })}
-        </Grid>
+        </List>
       </AccordionDetails>
     </Accordion>
   );

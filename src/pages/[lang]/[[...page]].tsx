@@ -9,10 +9,6 @@ import Footer from "@/components/BuilderIO/Footer";
 import Page from "@/interfaces/Page";
 import CustomHead from "@/components/UI/common/CustomHead";
 import { useLocaleStore } from "@/store/useLocaleStore";
-import Redis from "ioredis";
-
-// Инициализируем Redis-клиент
-const redisClient = new Redis(process.env.REDIS_URL || "");
 
 interface PageProps {
   builderPage: BuilderContent | null;
@@ -110,45 +106,27 @@ export const getStaticProps: GetStaticProps<PageProps> = async (context) => {
     urlPath = "/";
   }
 
-  // Ключи для кэширования в Redis
-  const cacheKeyPage = `builder:page:${urlPath}`;
-  const cacheKeyPages = `builder:pages`;
+  console.log("Fetching data from Builder.io");
 
-  // Пытаемся получить данные из кэша
-  const cachedPage = await redisClient.get(cacheKeyPage);
-  const cachedPages = await redisClient.get(cacheKeyPages);
+  // Получаем контент страницы с помощью Builder.io SDK
+  const builderPage = await builder
+    .get("page", {
+      userAttributes: { urlPath },
+    })
+    .toPromise();
 
-  let builderPage, pages;
-  if (cachedPage && cachedPages) {
-    console.log("Cache hit");
-    builderPage = JSON.parse(cachedPage);
-    pages = JSON.parse(cachedPages);
-  } else {
-    console.log("Cache miss, fetching from Builder.io");
-    // Получаем контент страницы с помощью Builder.io SDK
-    builderPage = await builder
-      .get("page", {
-        userAttributes: { urlPath },
-      })
-      .toPromise();
-
-    // Получаем данные всех страниц для навигации
-    const pagesData = await builder.getAll("page", {
-      fields: "data.url,data.title,data.children",
-      options: { noTargeting: true },
-    });
-    pages = pagesData.map((page: any) => ({
-      data: {
-        url: page.data?.url || "",
-        title: page.data?.title || "",
-        children: page.data?.children || [],
-      },
-    }));
-
-    // Кэшируем результаты на 1 час (3600 секунд)
-    await redisClient.setex(cacheKeyPage, 3600, JSON.stringify(builderPage));
-    await redisClient.setex(cacheKeyPages, 3600, JSON.stringify(pages));
-  }
+  // Получаем данные всех страниц для навигации
+  const pagesData = await builder.getAll("page", {
+    fields: "data.url,data.title,data.children",
+    options: { noTargeting: true },
+  });
+  const pages = pagesData.map((page: any) => ({
+    data: {
+      url: page.data?.url || "",
+      title: page.data?.title || "",
+      children: page.data?.children || [],
+    },
+  }));
 
   const domain = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   const asPath = urlPath;

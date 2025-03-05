@@ -21,6 +21,7 @@ interface ArticlePreviewProps {
     pl?: string;
   };
   slug: string;
+  link?: string;
 }
 
 // Функция для получения перевода по текущей локали
@@ -46,6 +47,7 @@ const ArticlePreview: React.FC<ArticlePreviewProps> = ({
   image,
   excerpt,
   slug,
+  link,
 }) => {
   const { locale } = useLocaleStore();
 
@@ -57,6 +59,9 @@ const ArticlePreview: React.FC<ArticlePreviewProps> = ({
     pl: "Czytaj więcej",
   };
   const readMoreText = readMoreTexts[locale] || readMoreTexts.en;
+
+  // Формирование ссылки: если есть link, используем его, иначе /article/slug
+  const articleUrl = link ? link : `/article/${slug}`;
 
   return (
     <Box
@@ -87,10 +92,10 @@ const ArticlePreview: React.FC<ArticlePreviewProps> = ({
         transition={{ duration: 0.5 }}
         sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 1 }}
       >
-        <Link href={`/article/${slug}`} passHref>
+        <Link href={articleUrl} passHref>
           <Title text={getTranslation(title, locale)} />
         </Link>
-        <Link href={`/article/${slug}`} passHref>
+        <Link href={articleUrl} passHref>
           <Box
             component="img"
             src={image}
@@ -121,12 +126,12 @@ const ArticlePreview: React.FC<ArticlePreviewProps> = ({
           marginTop: { xs: "1vh", md: 0 },
         }}
       >
-        <Link href={`/article/${slug}`} passHref>
+        <Link href={articleUrl} passHref>
           <Typography variant="body1" color="text.secondary">
             {getTranslation(excerpt, locale)}
           </Typography>
         </Link>
-        <Link href={`/article/${slug}`} passHref>
+        <Link href={articleUrl} passHref>
           <Button
             variant="contained"
             sx={{
