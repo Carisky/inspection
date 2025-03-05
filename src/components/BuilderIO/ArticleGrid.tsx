@@ -24,6 +24,7 @@ export interface ArticlePreview {
     titleEn?: string | { id: string; model: string; value?: string };
     titleUa?: string | { id: string; model: string; value?: string };
     slug?: string;
+    link?: string;
     image?: string;
     url?: string; // Добавляем свойство url
     descriptionPl?: string | { id: string; model: string; value?: string };
@@ -158,6 +159,10 @@ export const ArticleGrid: React.FC<ArticleGridProps> = ({
             categoryName = getStringValue(rawCategoryName);
           }
 
+          // Определяем URL для статьи: если есть link, то он имеет приоритет, иначе формируем на основе slug
+          const articleUrl =
+            preview.data.link || `/article/${preview.data.slug}`;
+
           return (
             <Grid
               item
@@ -174,19 +179,18 @@ export const ArticleGrid: React.FC<ArticleGridProps> = ({
                 }}
               >
                 {preview.data.image && (
-                  <Link href={preview.data.url || `/article/${preview.data.slug}`}>
-                  <CardMedia
-                    component="img"
-                   
-                    image={preview.data.image}
-                    alt={title}
-                    sx={{
-                      aspectRatio:"1/1",
-                      objectFit: "contain",
-                      height:"300",
-                      width:"300"
-                    }}
-                  />
+                  <Link href={articleUrl}>
+                    <CardMedia
+                      component="img"
+                      image={preview.data.image}
+                      alt={title}
+                      sx={{
+                        aspectRatio: "1/1",
+                        objectFit: "contain",
+                        height: "300",
+                        width: "300",
+                      }}
+                    />
                   </Link>
                 )}
                 <CardContent sx={{ flexGrow: 1 }}>
@@ -198,26 +202,25 @@ export const ArticleGrid: React.FC<ArticleGridProps> = ({
                       <strong>Категория:</strong> {categoryName}
                     </Typography>
                   )}
-                  <Link href={preview.data.url || `/article/${preview.data.slug}`}>
-
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ mt: 1 }}
-                  >
-                    {description}
-                  </Typography>
+                  <Link href={articleUrl}>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ mt: 1 }}
+                    >
+                      {description}
+                    </Typography>
                   </Link>
                 </CardContent>
-                {(preview.data.slug || preview.data.url) && (
+                {(preview.data.link || preview.data.slug) && (
                   <CardActions>
                     <Button
-                    variant={"contained"}
+                      variant={"contained"}
                       size="small"
                       sx={{
-                        backgroundColor:pallete.common_colors.main_color
+                        backgroundColor: pallete.common_colors.main_color,
                       }}
-                      href={preview.data.url || `/article/${preview.data.slug}`}
+                      href={articleUrl}
                     >
                       {readMoreText}
                     </Button>
