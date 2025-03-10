@@ -33,7 +33,7 @@ const CustomHead: React.FC<CustomHeadProps> = ({ title, description, domain, asP
           hrefLang={lang}
         />
       ))}
-      <link rel="alternate" href={`${domain}/ru${asPath}`} hrefLang="x-default" />
+      <link rel="alternate" href={`${domain}/pl${asPath}`} hrefLang="x-default" />
     </>
   );
 };

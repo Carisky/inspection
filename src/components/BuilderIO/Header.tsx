@@ -12,14 +12,19 @@ import {
 } from "@mui/material";
 import Image from "next/image";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Call, Mail, Map, Home, ChevronLeft, ChevronRight } from "@mui/icons-material";
+import {
+  Call,
+  Mail,
+  Map,
+  Home,
+  ChevronLeft,
+  ChevronRight,
+  TextSnippet,
+} from "@mui/icons-material";
 import Link from "next/link";
 import pallete from "@/palette";
 import Page from "@/interfaces/Page";
-import { useInitLocale } from "@/store/useLocaleStore";
 import LanguageSwitcher from "../UI/common/LanguageSwitcher";
-import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
-import InfoIcon from "@mui/icons-material/Info";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface HeaderProps {
@@ -79,7 +84,6 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
           height: "3vh",
         }}
       />
-      {/* Контактная информация */}
       <Box
         sx={{
           width: "100vw",
@@ -87,11 +91,19 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          paddingTop: "2%",
-          paddingBottom: "2%",
+          paddingY: "2%",
         }}
       >
-        <Box sx={{ width: "80vw", display: "flex" }}>
+        {/* Внутренний контейнер шириной ~80% */}
+        <Box
+          sx={{
+            width: "90vw",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          {/* Логотип слева */}
           <Box>
             <Link href={"/"}>
               <Image
@@ -103,51 +115,98 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
               />
             </Link>
           </Box>
+
+          {/* 4 колонки по 2 строки каждая */}
           <Box
             sx={{
               display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gridTemplateRows: "repeat(2, auto)",
-              gap: 2,
+              gridTemplateColumns: "repeat(4, 1fr)",
+              gridAutoRows: "auto",
+              gap: 0,
               flexGrow: 1,
+              marginX: 6,
+              marginY: 6,
               color: pallete.common_colors.accent,
             }}
           >
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Map sx={{ marginRight: "10px", color: pallete.common_colors.main_color }} />
-              ul. Rycerska 9, 41-902 Bytom
+            {/* Колонка 1: Адрес + Email */}
+            <Box>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                <Map sx={{ mr: 1, color: pallete.common_colors.main_color }} />
+                <Typography>ul. Rycerska 9, 41-902 Bytom</Typography>
+              </Box>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Mail sx={{ mr: 1, color: pallete.common_colors.main_color }} />
+                <Typography>tsl-silesia.com.pl</Typography>
+              </Box>
             </Box>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Call sx={{ marginRight: "10px", color: pallete.common_colors.main_color }} />
-              +48 (32) 282 90 62
+
+            {/* Колонка 2: Два номера телефона */}
+            <Box>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                <Call sx={{ mr: 1, color: pallete.common_colors.main_color }} />
+                <Typography>+48 (32) 282 90 62</Typography>
+              </Box>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Call sx={{ mr: 1, color: pallete.common_colors.main_color }} />
+                <Typography>+48 (32) 281 34 02</Typography>
+              </Box>
             </Box>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Call sx={{ marginRight: "10px", color: pallete.common_colors.main_color }} />
-              +48 (32) 281 34 02
+
+            {/* Колонка 3: NIP + Regon */}
+            <Box>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                <TextSnippet
+                  sx={{ mr: 1, color: pallete.common_colors.main_color }}
+                />
+                <Typography
+                  variant="body2"
+                  sx={{ color: pallete.common_colors.accent }}
+                >
+                  NIP: PL6262721695
+                </Typography>
+              </Box>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <TextSnippet
+                  sx={{ mr: 1, color: pallete.common_colors.main_color }}
+                />
+                <Typography
+                  variant="body2"
+                  sx={{ color: pallete.common_colors.accent }}
+                >
+                  Regon: 278125418
+                </Typography>
+              </Box>
             </Box>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Mail sx={{ marginRight: "10px", color: pallete.common_colors.main_color }} />
-              tsl-silesia.com.pl
-            </Box>
-            <Box sx={{ display: "flex", color: pallete.common_colors.accent, alignItems: "center" }}>
-              ISO : Pl014435/U
-            </Box>
-            <Box sx={{ display: "flex", color: pallete.common_colors.accent, alignItems: "center" }}>
-              AEO : PLAEOF330000100009
-            </Box>
-            <Box display="flex" alignItems="center">
-              <AssignmentIndIcon sx={{ mr: 1, color: pallete.common_colors.main_color }} />
-              <Typography sx={{ color: pallete.common_colors.accent }} variant="body2">
-                NIP: PL6262721695
-              </Typography>
-            </Box>
-            <Box display="flex" alignItems="center">
-              <InfoIcon sx={{ mr: 1, color: pallete.common_colors.main_color }} />
-              <Typography sx={{ color: pallete.common_colors.accent }} variant="body2">
-                Regon: 278125418
-              </Typography>
+
+            {/* Колонка 4: ISO + AEO */}
+            <Box>
+              <Box>
+              </Box>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                {/* Можете заменить на свою иконку/бэйдж для AEO */}
+                <TextSnippet sx={{ mr: 1, color: pallete.common_colors.main_color }}/>
+                <Typography
+                  variant="body2"
+                  sx={{ color: pallete.common_colors.accent }}
+                >
+                  Pl014435/U
+                </Typography>
+              </Box>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                {/* Можете заменить на свою иконку/бэйдж для AEO */}
+                <TextSnippet sx={{ mr: 1, color: pallete.common_colors.main_color }}/>
+                <Typography
+                  variant="body2"
+                  sx={{ color: pallete.common_colors.accent }}
+                >
+                  PLAEOF330000100009
+                </Typography>
+              </Box>
             </Box>
           </Box>
+
+          {/* Переключатель языка справа */}
           <LanguageSwitcher direction="column" />
         </Box>
       </Box>
@@ -180,7 +239,14 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
             </IconButton>
           )}
 
-          <Box sx={{ flexGrow: 1, height:"100%", overflow: "hidden", position: "relative" }}>
+          <Box
+            sx={{
+              flexGrow: 1,
+              height: "100%",
+              overflow: "hidden",
+              position: "relative",
+            }}
+          >
             <AnimatePresence custom={direction} initial={false}>
               <motion.div
                 key={currentPage}
@@ -195,7 +261,7 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
                   justifyContent: "center",
                   alignItems: "center",
                   width: "100%",
-                  height:"100%",
+                  height: "100%",
                 }}
               >
                 {visiblePages.map((page) => {
@@ -204,13 +270,15 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
                   return (
                     <Box
                       key={page.data.url}
-                      onMouseEnter={() => hasChildren && setActiveFolder(page.data.url)}
+                      onMouseEnter={() =>
+                        hasChildren && setActiveFolder(page.data.url)
+                      }
                       onMouseLeave={() => hasChildren && setActiveFolder(null)}
                       sx={{
                         position: "relative",
                         flexGrow: 1,
                         display: "flex",
-                        height:"100%",
+                        height: "100%",
                         justifyContent: "center",
                         alignItems: "center",
                         cursor: "pointer",
@@ -226,9 +294,11 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
                         style={{
                           color: pallete.common_colors.white,
                           textDecoration: "none",
-                          height:"100%",
-                          display:"flex",
-                          alignItems:"center"
+                          height: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          textAlign: "center",
                         }}
                       >
                         {page.data.url === "/" ? <Home /> : page.data.title}
@@ -246,7 +316,10 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
                           }}
                         >
                           {page.data.children!.map((child) => (
-                            <Box key={child.url} sx={{ padding: "0.5rem 1rem" }}>
+                            <Box
+                              key={child.url}
+                              sx={{ padding: "0.5rem 1rem" }}
+                            >
                               <Link
                                 href={child.url!}
                                 style={{
@@ -280,7 +353,9 @@ const DesktopHeader = ({ pages }: HeaderProps) => {
 
 const MobileHeader = ({ pages }: HeaderProps) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [expandedFolders, setExpandedFolders] = useState<{ [key: string]: boolean }>({});
+  const [expandedFolders, setExpandedFolders] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   const toggleDrawer = (open: boolean) => () => {
     setDrawerOpen(open);
@@ -318,7 +393,10 @@ const MobileHeader = ({ pages }: HeaderProps) => {
             priority
           />
         </Box>
-        <IconButton onClick={toggleDrawer(true)} sx={{ color: pallete.common_colors.white }}>
+        <IconButton
+          onClick={toggleDrawer(true)}
+          sx={{ color: pallete.common_colors.white }}
+        >
           <MenuIcon
             sx={{
               color: pallete.common_colors.main_color,
@@ -344,10 +422,13 @@ const MobileHeader = ({ pages }: HeaderProps) => {
         >
           <List>
             {pages.map((page) => {
-              const hasChildren = page.data.children && page.data.children.length > 0;
+              const hasChildren =
+                page.data.children && page.data.children.length > 0;
               return (
                 <React.Fragment key={page.data.url}>
-                  <ListItemButton onClick={() => hasChildren && toggleFolder(page.data.url)}>
+                  <ListItemButton
+                    onClick={() => hasChildren && toggleFolder(page.data.url)}
+                  >
                     <Link href={page.data.url}>
                       <Typography
                         sx={{
@@ -385,7 +466,9 @@ const MobileHeader = ({ pages }: HeaderProps) => {
               );
             })}
           </List>
-          <Box sx={{ padding: "1rem", display: "flex", justifyContent: "center" }}>
+          <Box
+            sx={{ padding: "1rem", display: "flex", justifyContent: "center" }}
+          >
             <LanguageSwitcher direction="row" />
           </Box>
         </Box>
@@ -395,7 +478,6 @@ const MobileHeader = ({ pages }: HeaderProps) => {
 };
 
 const Header = ({ pages }: HeaderProps) => {
-  useInitLocale();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 

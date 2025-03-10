@@ -104,7 +104,7 @@ const PeopleAccordion: React.FC<PeopleAccordionProps> = ({ headerTranslations, p
                   src={person.photo}
                   alt={`${person.firstName} ${person.lastName}`}
                   width={150}
-                  height={150}
+                  height={200}
                   style={{ objectFit: "cover", objectPosition: "center", borderRadius: "10%" }}
                 />
                 <Box>

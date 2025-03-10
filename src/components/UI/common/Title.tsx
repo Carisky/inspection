@@ -19,7 +19,7 @@ const Title: React.FC<TitleProps> = ({ text }) => {
         sx={{
           color: pallete.common_colors.main_color,
           textAlign: 'center',
-          fontSize: '22px',
+          fontSize: '16px',
           fontWeight: 600,
           height:"50px",
           alignContent:"center"
